@@ -25,7 +25,9 @@ $this->params['mainClass'] = 'main-content container';
             </p>
             <p class="task-text"><?= htmlspecialchars($task->description); ?></p>
             <div class="footer-task">
-                <p class="info-text town-text"><?= htmlspecialchars($task->location_name); ?></p>
+                <p class="info-text town-text">
+                    <?= htmlspecialchars($task->location_name ?? 'Адрес не указан'); ?>
+                </p>
                 <p class="info-text category-text"><?= htmlspecialchars($task->category->name); ?></p>
                 <a href="#" class="button button--black">Смотреть Задание</a>
             </div>
