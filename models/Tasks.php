@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\db\ActiveQuery;
 
 /**
  * This is the model class for table "tasks".
@@ -35,16 +36,16 @@ class Tasks extends \yii\db\ActiveRecord
     /**
      * ENUM field values
      */
-    const STATUS_NEW = 'new';
-    const STATUS_ACTIVE = 'active';
-    const STATUS_CANCELLED = 'cancelled';
-    const STATUS_COMPLETED = 'completed';
-    const STATUS_FAILED = 'failed';
+    const string STATUS_NEW = 'new';
+    const string STATUS_ACTIVE = 'active';
+    const string STATUS_CANCELLED = 'cancelled';
+    const string STATUS_COMPLETED = 'completed';
+    const string STATUS_FAILED = 'failed';
 
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'tasks';
     }
@@ -52,7 +53,7 @@ class Tasks extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['city_id', 'location_name', 'budget', 'due_date', 'executor_id'], 'default', 'value' => null],
@@ -73,7 +74,7 @@ class Tasks extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',
@@ -95,9 +96,9 @@ class Tasks extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Author]].
      *
-     * @return \yii\db\ActiveQuery|UsersQuery
+     * @return ActiveQuery|UsersQuery
      */
-    public function getAuthor()
+    public function getAuthor(): ActiveQuery|UsersQuery
     {
         return $this->hasOne(Users::class, ['id' => 'author_id']);
     }
@@ -105,9 +106,9 @@ class Tasks extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Category]].
      *
-     * @return \yii\db\ActiveQuery|CategoriesQuery
+     * @return ActiveQuery|CategoriesQuery
      */
-    public function getCategory()
+    public function getCategory(): ActiveQuery|CategoriesQuery
     {
         return $this->hasOne(Categories::class, ['id' => 'category_id']);
     }
@@ -115,9 +116,9 @@ class Tasks extends \yii\db\ActiveRecord
     /**
      * Gets query for [[City]].
      *
-     * @return \yii\db\ActiveQuery|CitiesQuery
+     * @return ActiveQuery|CitiesQuery
      */
-    public function getCity()
+    public function getCity(): ActiveQuery|CitiesQuery
     {
         return $this->hasOne(Cities::class, ['id' => 'city_id']);
     }
@@ -125,9 +126,9 @@ class Tasks extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Executor]].
      *
-     * @return \yii\db\ActiveQuery|UsersQuery
+     * @return ActiveQuery|UsersQuery
      */
-    public function getExecutor()
+    public function getExecutor(): ActiveQuery|UsersQuery
     {
         return $this->hasOne(Users::class, ['id' => 'executor_id']);
     }
@@ -135,9 +136,9 @@ class Tasks extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Responses]].
      *
-     * @return \yii\db\ActiveQuery|ResponsesQuery
+     * @return ActiveQuery|ResponsesQuery
      */
-    public function getResponses()
+    public function getResponses(): ActiveQuery|ResponsesQuery
     {
         return $this->hasMany(Responses::class, ['task_id' => 'id']);
     }
@@ -145,9 +146,9 @@ class Tasks extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Reviews]].
      *
-     * @return \yii\db\ActiveQuery|ReviewsQuery
+     * @return ActiveQuery|ReviewsQuery
      */
-    public function getReviews()
+    public function getReviews(): ActiveQuery|ReviewsQuery
     {
         return $this->hasMany(Reviews::class, ['task_id' => 'id']);
     }
@@ -155,9 +156,9 @@ class Tasks extends \yii\db\ActiveRecord
     /**
      * Gets query for [[TaskFiles]].
      *
-     * @return \yii\db\ActiveQuery|TaskFilesQuery
+     * @return ActiveQuery|TaskFilesQuery
      */
-    public function getTaskFiles()
+    public function getTaskFiles(): ActiveQuery|TaskFilesQuery
     {
         return $this->hasMany(TaskFiles::class, ['task_id' => 'id']);
     }
@@ -166,7 +167,7 @@ class Tasks extends \yii\db\ActiveRecord
      * {@inheritdoc}
      * @return TasksQuery the active query used by this AR class.
      */
-    public static function find()
+    public static function find(): TasksQuery
     {
         return new TasksQuery(get_called_class());
     }
@@ -176,7 +177,7 @@ class Tasks extends \yii\db\ActiveRecord
      * column status ENUM value labels
      * @return string[]
      */
-    public static function optsStatus()
+    public static function optsStatus(): array
     {
         return [
             self::STATUS_NEW => 'new',
@@ -190,7 +191,7 @@ class Tasks extends \yii\db\ActiveRecord
     /**
      * @return string
      */
-    public function displayStatus()
+    public function displayStatus(): string
     {
         return self::optsStatus()[$this->status];
     }
@@ -198,12 +199,12 @@ class Tasks extends \yii\db\ActiveRecord
     /**
      * @return bool
      */
-    public function isStatusNew()
+    public function isStatusNew(): bool
     {
         return $this->status === self::STATUS_NEW;
     }
 
-    public function setStatusToNew()
+    public function setStatusToNew(): void
     {
         $this->status = self::STATUS_NEW;
     }
@@ -211,12 +212,12 @@ class Tasks extends \yii\db\ActiveRecord
     /**
      * @return bool
      */
-    public function isStatusActive()
+    public function isStatusActive(): bool
     {
         return $this->status === self::STATUS_ACTIVE;
     }
 
-    public function setStatusToActive()
+    public function setStatusToActive(): void
     {
         $this->status = self::STATUS_ACTIVE;
     }
@@ -224,12 +225,12 @@ class Tasks extends \yii\db\ActiveRecord
     /**
      * @return bool
      */
-    public function isStatusCancelled()
+    public function isStatusCancelled(): bool
     {
         return $this->status === self::STATUS_CANCELLED;
     }
 
-    public function setStatusToCancelled()
+    public function setStatusToCancelled(): void
     {
         $this->status = self::STATUS_CANCELLED;
     }
@@ -237,12 +238,12 @@ class Tasks extends \yii\db\ActiveRecord
     /**
      * @return bool
      */
-    public function isStatusCompleted()
+    public function isStatusCompleted(): bool
     {
         return $this->status === self::STATUS_COMPLETED;
     }
 
-    public function setStatusToCompleted()
+    public function setStatusToCompleted(): void
     {
         $this->status = self::STATUS_COMPLETED;
     }
@@ -250,13 +251,18 @@ class Tasks extends \yii\db\ActiveRecord
     /**
      * @return bool
      */
-    public function isStatusFailed()
+    public function isStatusFailed(): bool
     {
         return $this->status === self::STATUS_FAILED;
     }
 
-    public function setStatusToFailed()
+    public function setStatusToFailed(): void
     {
         $this->status = self::STATUS_FAILED;
+    }
+
+    public function getCreatedAtFormatted(): ?string
+    {
+        return Yii::$app->formatter->asRelativeTime(strtotime($this->created_at));
     }
 }

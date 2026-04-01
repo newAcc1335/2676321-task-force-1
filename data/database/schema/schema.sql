@@ -76,8 +76,7 @@ CREATE TABLE IF NOT EXISTS responses (
   executor_id INT UNSIGNED NOT NULL,
   price INT UNSIGNED NULL,
   comment TEXT NULL,
-
-  status ENUM('pending', 'accepted', 'rejected', 'cancelled') NOT NULL DEFAULT 'pending',
+  status ENUM('pending', 'accepted', 'rejected') NOT NULL DEFAULT 'pending',
 
   INDEX idx_task_id (task_id),
   INDEX idx_executor_id (executor_id),

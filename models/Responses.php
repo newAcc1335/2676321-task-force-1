@@ -27,7 +27,6 @@ class Responses extends \yii\db\ActiveRecord
     const STATUS_PENDING = 'pending';
     const STATUS_ACCEPTED = 'accepted';
     const STATUS_REJECTED = 'rejected';
-    const STATUS_CANCELLED = 'cancelled';
 
     /**
      * {@inheritdoc}
@@ -111,7 +110,6 @@ class Responses extends \yii\db\ActiveRecord
             self::STATUS_PENDING => 'pending',
             self::STATUS_ACCEPTED => 'accepted',
             self::STATUS_REJECTED => 'rejected',
-            self::STATUS_CANCELLED => 'cancelled',
         ];
     }
 
@@ -160,18 +158,5 @@ class Responses extends \yii\db\ActiveRecord
     public function setStatusToRejected()
     {
         $this->status = self::STATUS_REJECTED;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isStatusCancelled()
-    {
-        return $this->status === self::STATUS_CANCELLED;
-    }
-
-    public function setStatusToCancelled()
-    {
-        $this->status = self::STATUS_CANCELLED;
     }
 }
