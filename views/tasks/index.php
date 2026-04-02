@@ -2,7 +2,12 @@
 
 /**
  * @var array $tasks
+ * @var array $categories
+ * @var Model $form
  */
+
+use app\models\TasksForm;
+use yii\base\Model;
 
 $this->params['mainClass'] = 'main-content container';
 ?>
@@ -56,38 +61,47 @@ $this->params['mainClass'] = 'main-content container';
 <div class="right-column">
    <div class="right-card black">
        <div class="search-form">
-            <form>
-                <h4 class="head-card">Категории</h4>
-                <div class="form-group">
-                <div class="checkbox-wrapper">
-                    <label class="control-label" for="courier-services">
-                        <input type="checkbox" id="courier-services" checked>
-                        Курьерские услуги
-                    </label>
-                    <label class="control-label" for="cargo-transportation">
-                        <input id="cargo-transportation" type="checkbox">
-                        Грузоперевозки
-                    </label>
-                    <label class="control-label" for="translations">
-                        <input id="translations" type="checkbox">
-                        Переводы
-                    </label>
-                </div>
-                </div>
+            <form method="get">
+                <h4 class="head-card"><?= $form->getAttributeLabel('categories'); ?></h4>
+                <?php foreach ($categories as $category): ?>
+                    <div class="form-group">
+                        <div class="checkbox-wrapper">
+                            <label class="control-label" for="<?= $category->id; ?>">
+                                <input type="checkbox"
+                                       id="<?= $category->id; ?>"
+                                       name="TasksForm[categories][]"
+                                       value="<?= $category->id; ?>"
+                                        <?= in_array($category->id, $form->categories) ? 'checked' : ''; ?>
+                                >
+                                <?= htmlspecialchars($category->name); ?>
+                            </label>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+
                 <h4 class="head-card">Дополнительно</h4>
                 <div class="form-group">
                     <label class="control-label" for="without-performer">
-                        <input id="without-performer" type="checkbox" checked>
-                        Без исполнителя
+                        <input type="hidden" name="TasksForm[isWithoutExecutor]" value="0">
+                        <input
+                                id="without-performer"
+                                type="checkbox"
+                                name="TasksForm[isWithoutExecutor]"
+                                value="1"
+                                <?= $form->isWithoutExecutor ? 'checked' : ''; ?>
+                        >
+                        <?= $form->getAttributeLabel('isWithoutExecutor'); ?>
                     </label>
                 </div>
-                <h4 class="head-card">Период</h4>
+                <h4 class="head-card"><?= $form->getAttributeLabel('period'); ?></h4>
                 <div class="form-group">
                     <label for="period-value"></label>
-                    <select id="period-value">
-                        <option>1 час</option>
-                        <option>12 часов</option>
-                        <option>24 часа</option>
+                    <select id="period-value" name="TasksForm[period]">
+                        <?php foreach (TasksForm::PERIOD_OPTIONS as $value => $label): ?>
+                            <option value="<?= $value; ?>" <?= (string)$form->period === (string)$value ? 'selected' : ''; ?>>
+                                <?= $label; ?>
+                            </option>
+                        <?php endforeach; ?>
                     </select>
                 </div>
                 <input type="submit" class="button button--blue" value="Искать">
