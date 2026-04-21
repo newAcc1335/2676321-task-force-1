@@ -41,12 +41,19 @@ $config = [
                 ],
             ],
         ],
+        'formatter' => [
+                'class' => yii\i18n\Formatter::class,
+                'decimalSeparator' => '.',
+                'thousandSeparator' => ' ',
+        ],
         'db' => $db,
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'enableStrictParsing' => false,
             'rules' => [
+                    'tasks/view/<id:\d+>' => 'tasks/view',
+                    'users/view/<id:\d+>' => 'users/view',
             ],
         ],
     ],

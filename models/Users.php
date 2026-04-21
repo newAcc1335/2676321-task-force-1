@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\base\InvalidConfigException;
 
 /**
  * This is the model class for table "users".
@@ -223,5 +224,51 @@ class Users extends \yii\db\ActiveRecord
     public function setRoleToExecutor()
     {
         $this->role = self::ROLE_EXECUTOR;
+    }
+
+    public function getRating(): float
+    {
+        $sum = $this->getReviews0()->sum('rating') ?? 0;
+        $count = $this->getReviews0()->count();
+
+        $failed = $this->getTasks0()
+                ->andWhere(['status' => Tasks::STATUS_FAILED])
+                ->count();
+
+        $total = $count + $failed;
+
+        return $total === 0 ? 0.0 : round($sum / $total, 2);
+    }
+
+    public function getCompletedTasksCount(): int
+    {
+        return $this->getTasks0()
+                ->andWhere(['status' => Tasks::STATUS_COMPLETED])
+                ->count();
+    }
+
+    public function getFailedTasksCount(): int
+    {
+        return $this->getTasks0()
+                ->andWhere(['status' => Tasks::STATUS_FAILED])
+                ->count();
+    }
+
+    /**
+     * @throws InvalidConfigException
+     */
+    public function getCreatedAtFormatted(): string
+    {
+        return Yii::$app->formatter->asDate($this->created_at, 'php:d F, H:i');
+    }
+
+    public function getTgUsername(): ?string
+    {
+        return $this->tg ? ltrim($this->tg, '@') : null;
+    }
+
+    public function getTgUrl(): ?string
+    {
+        return $this->tg ? 'https://t.me/' . $this->tgUsername : null;
     }
 }
