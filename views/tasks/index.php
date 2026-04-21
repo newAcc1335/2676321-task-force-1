@@ -8,8 +8,10 @@
 
 use app\models\TasksForm;
 use yii\base\Model;
+use yii\helpers\Url;
 
 $this->params['mainClass'] = 'main-content container';
+$this->title = 'Tasks';
 ?>
 
 <div class="left-column">
@@ -17,7 +19,9 @@ $this->params['mainClass'] = 'main-content container';
     <?php foreach ($tasks as $task) : ?>
         <div class="task-card">
             <div class="header-task">
-                <a  href="#" class="link link--block link--big"><?= htmlspecialchars($task->title); ?></a>
+                <a  href="<?= Url::to(['tasks/view', 'id' => $task->id]) ?>" class="link link--block link--big">
+                    <?= htmlspecialchars($task->title); ?>
+                </a>
                 <p class="price price--task">
                     <?= !empty($task->budget)
                             ? htmlspecialchars($task->budget) . ' ₽'
@@ -34,7 +38,9 @@ $this->params['mainClass'] = 'main-content container';
                     <?= htmlspecialchars($task->location_name ?? 'Адрес не указан'); ?>
                 </p>
                 <p class="info-text category-text"><?= htmlspecialchars($task->category->name); ?></p>
-                <a href="#" class="button button--black">Смотреть Задание</a>
+                <a href="<?= Url::to(['tasks/view', 'id' => $task->id]) ?>" class="button button--black">
+                    Смотреть Задание
+                </a>
             </div>
         </div>
     <?php endforeach; ?>
