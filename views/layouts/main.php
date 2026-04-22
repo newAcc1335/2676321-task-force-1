@@ -16,6 +16,8 @@ $this->registerMetaTag(['name' => 'viewport', 'content' => 'width=device-width, 
 $this->registerMetaTag(['name' => 'description', 'content' => $this->params['meta_description'] ?? '']);
 $this->registerMetaTag(['name' => 'keywords', 'content' => $this->params['meta_keywords'] ?? '']);
 $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii::getAlias('@web/favicon.ico')]);
+
+$isRegistrationPage = Yii::$app->controller->route === 'registration/index';
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
@@ -27,6 +29,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
 <body>
 <?php $this->beginBody() ?>
 
+<?php if (!$isRegistrationPage): ?>
 <header class="page-header">
     <nav class="main-nav">
         <a href='#' class="header-logo">
@@ -71,6 +74,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
         </div>
     </div>
 </header>
+<?php endif; ?>
 
 <main class="<?= $this->params['mainClass'] ?? 'container' ?>">
     <?php if (!empty($this->params['breadcrumbs'])): ?>
