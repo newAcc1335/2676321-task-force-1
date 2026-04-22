@@ -1,6 +1,8 @@
 <?php
-/** @var array $task */
 
+/** @var Tasks $task */
+
+use app\models\Tasks;
 use yii\helpers\Html;
 
 $this->params['mainClass'] = 'main-content container';
@@ -16,18 +18,18 @@ $this->title = 'my task =)';
         <?php endif; ?>
     </div>
 
-    <p class="task-description"><?= nl2br(Html::encode($task->description)) ?></p>
+    <p class="task-description"><?= Html::encode($task->description); ?></p>
     <a href="#" class="button button--blue action-btn" data-action="act_response">Откликнуться на задание</a>
     <a href="#" class="button button--orange action-btn" data-action="refusal">Отказаться от задания</a>
     <a href="#" class="button button--pink action-btn" data-action="completion">Завершить задание</a>
     <div class="task-map">
         <img class="map" src="img/map.png"  width="725" height="346" alt="Новый арбат, 23, к. 1">
-        <p class="map-address town"><?= Html::encode($task->city->name ?? '') ?></p>
-        <p class="map-address"><?= Html::encode($task->location_name ?? '') ?></p>
+        <p class="map-address town"><?= Html::encode($task->city->name ?? ''); ?></p>
+        <p class="map-address"><?= Html::encode($task->location_name ?? ''); ?></p>
     </div>
     <h4 class="head-regular">Отклики на задание</h4>
     <div class="response-card">
-        <img class="customer-photo" src="img/man-glasses.png" width="146" height="156" alt="Фото заказчиков">
+        <img class="customer-photo" src="/img/man-glasses.png" width="146" height="156" alt="Фото заказчиков">
         <div class="feedback-wrapper">
             <a href="#" class="link link--block link--big">Астахов Павел</a>
             <div class="response-wrapper">
@@ -76,17 +78,13 @@ $this->title = 'my task =)';
         <h4 class="head-card">Информация о задании</h4>
         <dl class="black-list">
             <dt>Категория</dt>
-            <dd><?= htmlspecialchars($task->category->name ?? '') ?></dd>
+            <dd><?= Html::encode($task->category->name ?? ''); ?></dd>
             <dt>Дата публикации</dt>
-            <dd><?= $task->getCreatedAtFormatted() ?></dd>
+            <dd><?= $task->getCreatedAtFormatted(); ?></dd>
             <dt>Срок выполнения</dt>
-            <dd>
-                <?= $task->due_date
-                        ? Yii::$app->formatter->asDatetime($task->due_date)
-                        : 'Не указан' ?>
-            </dd>
+            <dd><?= $task->dueDateFormatted; ?></dd>
             <dt>Статус</dt>
-            <dd><?= htmlspecialchars($task->displayStatus()) ?></dd>
+            <dd><?= Html::encode($task->displayStatus()) ?></dd>
         </dl>
     </div>
     <div class="right-card white file-card">

@@ -21,36 +21,30 @@ $this->title = 'Регистрация';
                 ],
         ]); ?>
             <h3 class="head-main head-task">Регистрация нового пользователя</h3>
-
             <?= $form->field($registrationForm, 'name')
                     ->textInput(['id' => 'username'])
-                    ->label('Ваше имя');
-            ?>
+                    ->label('Ваше имя'); ?>
             <div class="half-wrapper">
                 <?= $form->field($registrationForm, 'email')
                         ->input('email', ['id' => 'email-user'])
-                        ->label('Email');
-                ?>
+                        ->label('Email'); ?>
 
                 <?= $form->field($registrationForm, 'city_id')
                         ->dropDownList(
-                                Cities::find()->select(['name', 'id'])->indexBy('id')->column(),
-                                ['prompt' => 'Выберите город', 'id' => 'town-user']
+                            Cities::find()->select(['name', 'id'])->indexBy('id')->column(),
+                            ['prompt' => 'Выберите город', 'id' => 'town-user']
                         )
-                        ->label('Город');
-                ?>
+                        ->label('Город'); ?>
             </div>
             <div class="half-wrapper">
                 <?= $form->field($registrationForm, 'password')
                         ->passwordInput(['id' => 'password-user'])
-                        ->label('Пароль');
-                ?>
+                        ->label('Пароль'); ?>
             </div>
             <div class="half-wrapper">
                 <?= $form->field($registrationForm, 'passwordRepeat')
                         ->passwordInput(['id' => 'password-repeat-user'])
-                        ->label('Повтор пароля');
-                ?>
+                        ->label('Повтор пароля'); ?>
             </div>
             <div class="form-group">
                 <label class="control-label checkbox-label">

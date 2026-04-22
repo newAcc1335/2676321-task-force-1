@@ -1,12 +1,13 @@
 <?php
+
 namespace app\controllers;
 
 use Yii;
 use yii\db\Exception;
 use yii\web\Controller;
+use yii\web\Response;
 use app\models\Users;
 use app\models\RegistrationForm;
-use yii\web\Response;
 
 class RegistrationController extends Controller
 {
@@ -19,7 +20,6 @@ class RegistrationController extends Controller
         $registrationForm = new RegistrationForm();
 
         if ($registrationForm->load(Yii::$app->request->post()) && $registrationForm->validate()) {
-
             $user = new Users();
             $user->name = $registrationForm->name;
             $user->email = $registrationForm->email;
