@@ -1,9 +1,9 @@
 <?php
 /** @var Users $user */
 
-use app\models\Users;
 use yii\helpers\Html;
 use yii\helpers\Url;
+use app\models\Users;
 
 $this->params['mainClass'] = 'main-content container';
 $this->title = Html::encode($user->name);
@@ -15,7 +15,7 @@ $rating = round($user->rating);
         <div class="photo-rate">
             <img class="card-photo" src="<?= $user->image_url ?: '/img/man-glasses.png'; ?>"
                  width="191" height="190" alt="Фото пользователя"
-                 onerror="this.src='/img/man-glasses.png'">
+            >
             <div class="card-rate">
                 <div class="stars-rating big">
                     <?php for ($i = 0; $i < $rating; $i++): ?>

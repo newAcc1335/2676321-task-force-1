@@ -3,7 +3,9 @@
 namespace app\models;
 
 use Yii;
+use yii\base\InvalidConfigException;
 use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "tasks".
@@ -30,17 +32,16 @@ use yii\db\ActiveQuery;
  * @property Reviews[] $reviews
  * @property TaskFiles[] $taskFiles
  */
-class Tasks extends \yii\db\ActiveRecord
+class Tasks extends ActiveRecord
 {
-
     /**
      * ENUM field values
      */
-    const string STATUS_NEW = 'new';
-    const string STATUS_ACTIVE = 'active';
-    const string STATUS_CANCELLED = 'cancelled';
-    const string STATUS_COMPLETED = 'completed';
-    const string STATUS_FAILED = 'failed';
+    public const string STATUS_NEW = 'new';
+    public const string STATUS_ACTIVE = 'active';
+    public const string STATUS_CANCELLED = 'cancelled';
+    public const string STATUS_COMPLETED = 'completed';
+    public const string STATUS_FAILED = 'failed';
 
     /**
      * {@inheritdoc}
@@ -264,5 +265,13 @@ class Tasks extends \yii\db\ActiveRecord
     public function getCreatedAtFormatted(): ?string
     {
         return Yii::$app->formatter->asRelativeTime(strtotime($this->created_at));
+    }
+
+    /**
+     * @throws InvalidConfigException
+     */
+    public function getDueDateFormatted(): string
+    {
+        return $this->due_date ? Yii::$app->formatter->asDatetime($this->due_date) : 'Не указан';
     }
 }
