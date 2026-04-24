@@ -4,6 +4,9 @@ namespace app\models;
 
 use Yii;
 use yii\base\InvalidConfigException;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
+use yii\web\IdentityInterface;
 
 /**
  * This is the model class for table "users".
@@ -30,19 +33,18 @@ use yii\base\InvalidConfigException;
  * @property Tasks[] $tasks0
  * @property UserCategories[] $userCategories
  */
-class Users extends \yii\db\ActiveRecord
+class Users extends ActiveRecord implements IdentityInterface
 {
-
     /**
      * ENUM field values
      */
-    const ROLE_AUTHOR = 'author';
-    const ROLE_EXECUTOR = 'executor';
+    public const ROLE_AUTHOR = 'author';
+    public const ROLE_EXECUTOR = 'executor';
 
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'users';
     }
@@ -50,7 +52,7 @@ class Users extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['password_hash', 'birthday', 'phone', 'tg', 'image_url', 'city_id'], 'default', 'value' => null],
@@ -72,7 +74,7 @@ class Users extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',
@@ -93,9 +95,9 @@ class Users extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Categories]].
      *
-     * @return \yii\db\ActiveQuery|CategoriesQuery
+     * @return ActiveQuery
      */
-    public function getCategories()
+    public function getCategories(): ActiveQuery
     {
         return $this->hasMany(Categories::class, ['id' => 'category_id'])->viaTable('user_categories', ['user_id' => 'id']);
     }
@@ -103,9 +105,9 @@ class Users extends \yii\db\ActiveRecord
     /**
      * Gets query for [[City]].
      *
-     * @return \yii\db\ActiveQuery|CitiesQuery
+     * @return ActiveQuery
      */
-    public function getCity()
+    public function getCity(): ActiveQuery
     {
         return $this->hasOne(Cities::class, ['id' => 'city_id']);
     }
@@ -113,9 +115,9 @@ class Users extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Responses]].
      *
-     * @return \yii\db\ActiveQuery|ResponsesQuery
+     * @return ActiveQuery
      */
-    public function getResponses()
+    public function getResponses(): ActiveQuery
     {
         return $this->hasMany(Responses::class, ['executor_id' => 'id']);
     }
@@ -123,9 +125,9 @@ class Users extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Reviews]].
      *
-     * @return \yii\db\ActiveQuery|ReviewsQuery
+     * @return ActiveQuery
      */
-    public function getReviews()
+    public function getReviews(): ActiveQuery
     {
         return $this->hasMany(Reviews::class, ['author_id' => 'id']);
     }
@@ -133,9 +135,9 @@ class Users extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Reviews0]].
      *
-     * @return \yii\db\ActiveQuery|ReviewsQuery
+     * @return ActiveQuery
      */
-    public function getReviews0()
+    public function getReviews0(): ActiveQuery
     {
         return $this->hasMany(Reviews::class, ['executor_id' => 'id']);
     }
@@ -143,9 +145,9 @@ class Users extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Tasks]].
      *
-     * @return \yii\db\ActiveQuery|TasksQuery
+     * @return ActiveQuery
      */
-    public function getTasks()
+    public function getTasks(): ActiveQuery
     {
         return $this->hasMany(Tasks::class, ['author_id' => 'id']);
     }
@@ -153,7 +155,7 @@ class Users extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Tasks0]].
      *
-     * @return \yii\db\ActiveQuery|TasksQuery
+     * @return ActiveQuery|TasksQuery
      */
     public function getTasks0()
     {
@@ -163,7 +165,7 @@ class Users extends \yii\db\ActiveRecord
     /**
      * Gets query for [[UserCategories]].
      *
-     * @return \yii\db\ActiveQuery|UserCategoriesQuery
+     * @return ActiveQuery|UserCategoriesQuery
      */
     public function getUserCategories()
     {
@@ -270,5 +272,54 @@ class Users extends \yii\db\ActiveRecord
     public function getTgUrl(): ?string
     {
         return $this->tg ? 'https://t.me/' . $this->tgUsername : null;
+    }
+
+    /**
+     * @param $id
+     * @return Users|null
+     */
+    public static function findIdentity($id): ?self
+    {
+        return self::findOne($id);
+    }
+
+    /**
+     * @param $token
+     * @param $type
+     * @return void
+     */
+    public static function findIdentityByAccessToken($token, $type = null)
+    {
+        // TODO: Implement findIdentityByAccessToken() method.
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getId(): mixed
+    {
+        return $this->getPrimaryKey();
+    }
+
+    /**
+     * @return void
+     */
+    public function getAuthKey()
+    {
+        // TODO: Implement getAuthKey() method.
+    }
+
+    /**
+     * @param $authKey
+     * @return void
+     */
+    public function validateAuthKey($authKey)
+    {
+        // TODO: Implement validateAuthKey() method.
+    }
+
+    public function validatePassword($password): bool
+    {
+        return Yii::$app->security->validatePassword($password, $this->password_hash);
     }
 }
