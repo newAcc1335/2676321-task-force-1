@@ -2,15 +2,39 @@
 
 namespace app\controllers;
 
+use app\models\AddTaskForm;
+use Yii;
+use yii\db\Exception;
+use yii\filters\AccessControl;
+use yii\web\Controller;
+use yii\web\NotFoundHttpException;
 use app\models\Categories;
 use app\models\TasksForm;
-use Yii;
-use yii\web\Controller;
 use app\models\Tasks;
-use yii\web\NotFoundHttpException;
+use yii\web\Response;
 
 class TasksController extends Controller
 {
+    public function behaviors(): array
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => ['add'],
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['add'],
+                        'roles' => ['@'],
+                        'matchCallback' => function () {
+                            return Yii::$app->user->identity->isRoleAuthor();
+                        },
+                    ],
+                ],
+            ],
+        ];
+    }
+
     public function actionIndex(): string
     {
         $form = new TasksForm();
@@ -54,5 +78,21 @@ class TasksController extends Controller
         }
 
         return $this->render('view', ['task' => $task]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function actionAdd(): Response|string
+    {
+        $form = new AddTaskForm();
+        $categories = Categories::find()->all();
+
+        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
+            $task = $form->createTask(Yii::$app->user->id);
+            return $this->redirect(['/tasks/view', 'id' => $task->id]);
+        }
+
+        return $this->render('add', ['addTaskForm' => $form, 'categories' => $categories]);
     }
 }

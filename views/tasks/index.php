@@ -1,14 +1,15 @@
 <?php
 
 /**
- * @var array $tasks
- * @var array $categories
- * @var Model $form
+ * @var Tasks $tasks
+ * @var Categories $categories
+ * @var TasksForm $form
  */
 
-use app\models\TasksForm;
-use yii\base\Model;
 use yii\helpers\Url;
+use app\models\Tasks;
+use app\models\TasksForm;
+use app\models\Categories;
 
 $this->params['mainClass'] = 'main-content container';
 $this->title = 'Tasks';
@@ -25,8 +26,7 @@ $this->title = 'Tasks';
                 <p class="price price--task">
                     <?= !empty($task->budget)
                             ? htmlspecialchars($task->budget) . ' ₽'
-                            : 'Договоримся =)';
-                    ?>
+                            : 'Договоримся =)'; ?>
                 </p>
             </div>
             <p class="info-text">
