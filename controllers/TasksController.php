@@ -2,16 +2,16 @@
 
 namespace app\controllers;
 
-use app\models\AddTaskForm;
 use Yii;
 use yii\db\Exception;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\web\Response;
 use app\models\Categories;
 use app\models\TasksForm;
 use app\models\Tasks;
-use yii\web\Response;
+use app\models\AddTaskForm;
 
 class TasksController extends Controller
 {
@@ -88,9 +88,11 @@ class TasksController extends Controller
         $form = new AddTaskForm();
         $categories = Categories::find()->all();
 
-        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
-            $task = $form->createTask(Yii::$app->user->id);
-            return $this->redirect(['/tasks/view', 'id' => $task->id]);
+        if ($form->load(Yii::$app->request->post())) {
+            if ($form->validate()) {
+                $task = $form->addTask(Yii::$app->user->id);
+                return $this->redirect(['/tasks/view', 'id' => $task->id]);
+            }
         }
 
         return $this->render('add', ['addTaskForm' => $form, 'categories' => $categories]);

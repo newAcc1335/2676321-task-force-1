@@ -13,7 +13,6 @@ $this->title = 'Add Task';
 
 <div class="add-task-form regular-form">
     <?php $form = ActiveForm::begin([
-            'id' => 'task-form',
             'fieldConfig' => [
                     'options' => ['class' => 'form-group'],
                     'labelOptions' => ['class' => 'control-label'],
@@ -24,11 +23,11 @@ $this->title = 'Add Task';
     <h3 class="head-main head-main">Публикация нового задания</h3>
 
     <?= $form->field($addTaskForm, 'title')
-            ->textInput(['id' => 'essence-work'])
+            ->textInput()
             ->label('Опишите суть работы'); ?>
 
     <?= $form->field($addTaskForm, 'description')
-            ->textarea(['id' => 'username'])
+            ->textarea()
             ->label('Подробности задания'); ?>
 
     <?= $form->field($addTaskForm, 'category_id')
@@ -36,7 +35,7 @@ $this->title = 'Add Task';
             ->label('Категория'); ?>
 
     <?= $form->field($addTaskForm, 'location_name')
-            ->textInput(['class' => 'location-icon', 'id' => 'location'])
+            ->textInput(['class' => 'location-icon'])
             ->label('Локация'); ?>
 
     <div class="half-wrapper">

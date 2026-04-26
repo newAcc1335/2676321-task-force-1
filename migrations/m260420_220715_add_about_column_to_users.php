@@ -7,7 +7,7 @@ class m260420_220715_add_about_column_to_users extends Migration
     /**
      * {@inheritdoc}
      */
-    public function safeUp()
+    public function safeUp(): void
     {
         $this->addColumn('users', 'about', $this->text()->null());
     }
@@ -15,23 +15,8 @@ class m260420_220715_add_about_column_to_users extends Migration
     /**
      * {@inheritdoc}
      */
-    public function safeDown()
+    public function safeDown(): void
     {
         $this->dropColumn('users', 'about');
     }
-
-    /*
-    // Use up()/down() to run migration code without a transaction.
-    public function up()
-    {
-
-    }
-
-    public function down()
-    {
-        echo "m260420_220715_add_about_column_to_users cannot be reverted.\n";
-
-        return false;
-    }
-    */
 }

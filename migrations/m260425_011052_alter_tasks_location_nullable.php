@@ -18,25 +18,11 @@ class m260425_011052_alter_tasks_location_nullable extends Migration
         UPDATE tasks 
         SET location = ST_GeomFromText('POINT(0 0)')
         WHERE location IS NULL
-    ");
+        ");
 
         $this->execute("
         ALTER TABLE tasks 
         MODIFY location POINT NOT NULL
-    ");
+        ");
     }
-    /*
-    // Use up()/down() to run migration code without a transaction.
-    public function up()
-    {
-
-    }
-
-    public function down()
-    {
-        echo "m260425_011052_alter_tasks_location_nullable cannot be reverted.\n";
-
-        return false;
-    }
-    */
 }
