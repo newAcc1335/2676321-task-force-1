@@ -20,13 +20,12 @@ use Yii;
  */
 class Responses extends \yii\db\ActiveRecord
 {
-
     /**
      * ENUM field values
      */
-    const STATUS_PENDING = 'pending';
-    const STATUS_ACCEPTED = 'accepted';
-    const STATUS_REJECTED = 'rejected';
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_ACCEPTED = 'accepted';
+    public const STATUS_REJECTED = 'rejected';
 
     /**
      * {@inheritdoc}

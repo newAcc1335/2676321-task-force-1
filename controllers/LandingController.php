@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use Yii;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
 use yii\widgets\ActiveForm;
@@ -11,6 +12,23 @@ use app\models\LoginForm;
 class LandingController extends Controller
 {
     public $layout = 'landing';
+
+    public function behaviors(): array
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => ['logout'],
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['logout'],
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
+        ];
+    }
 
     public function actionIndex(): array|Response|string
     {

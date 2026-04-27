@@ -12,6 +12,7 @@ use app\models\Categories;
 use app\models\TasksForm;
 use app\models\Tasks;
 use app\models\AddTaskForm;
+use app\models\Responses;
 
 class TasksController extends Controller
 {
@@ -71,7 +72,10 @@ class TasksController extends Controller
      */
     public function actionView(int $id): string
     {
-        $task = Tasks::findOne($id);
+        $task = Tasks::find()
+            ->with(['responses.executor'])
+            ->where(['id' => $id])
+            ->one();
 
         if (!$task) {
             throw new NotFoundHttpException('Задание не найдено');
@@ -96,5 +100,48 @@ class TasksController extends Controller
         }
 
         return $this->render('add', ['addTaskForm' => $form, 'categories' => $categories]);
+    }
+
+    /**
+     * @throws NotFoundHttpException
+     * @throws Exception
+     */
+    public function actionAcceptResponse(int $id): Response
+    {
+        $response = Responses::findOne($id);
+
+        //потом поменять на разные
+        if (!$response || $response->task->author_id !== Yii::$app->user->id) {
+            throw new NotFoundHttpException('Отклик не найден');
+        }
+
+        $response->setStatusToAccepted();
+        $response->save(false);
+
+        $task = $response->task;
+        $task->executor_id = $response->executor_id;
+        $task->setStatusToActive();
+        $task->save(false);
+
+        return $this->redirect(['tasks/view', 'id' => $task->id]);
+    }
+
+    /**
+     * @throws Exception
+     * @throws NotFoundHttpException
+     */
+    public function actionRejectResponse(int $id): Response
+    {
+        $response = Responses::findOne($id);
+
+        //потом поменять на разные
+        if (!$response || $response->task->author_id !== Yii::$app->user->id) {
+            throw new NotFoundHttpException('Отклик не найден');
+        }
+
+        $response->setStatusToRejected();
+        $response->save(false);
+
+        return $this->redirect(['tasks/view', 'id' => $response->task->id]);
     }
 }
