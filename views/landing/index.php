@@ -1,6 +1,11 @@
 <?php
 
+/** @var LoginForm $loginForm */
+
+use yii\helpers\Html;
 use yii\helpers\Url;
+use yii\widgets\ActiveForm;
+use app\models\LoginForm;
 
 ?>
 <div class="landing-container">
@@ -93,3 +98,29 @@ use yii\helpers\Url;
         </div>
     </div>
 </div>
+<section class="modal enter-form form-modal" id="enter-form">
+    <h2>Вход на сайт</h2>
+    <?php $form = ActiveForm::begin([
+            'action' => ['/landing/index'],
+            'id' => 'login-form',
+            'enableAjaxValidation' => true,
+            'validateOnSubmit' => true,
+            'fieldConfig' => [
+//                    'options' => ['tag' => 'p'],
+                    'labelOptions' => ['class' => 'form-modal-description'],
+//                    'template' => "{label}\n{input}\n{error}",
+            ],
+    ]); ?>
+
+    <?= $form->field($loginForm, 'email')
+            ->input('email', ['class' => 'enter-form-email input input-middle'])
+            ->label('Email'); ?>
+
+    <?= $form->field($loginForm, 'password')
+            ->passwordInput(['class' => 'enter-form-email input input-middle'])
+            ->label('Пароль'); ?>
+
+    <?= Html::submitButton('Войти', ['class' => 'button']); ?>
+    <?php ActiveForm::end(); ?>
+    <button class="form-modal-close" type="button">Закрыть</button>
+</section>

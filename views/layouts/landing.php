@@ -2,14 +2,11 @@
 
 /** @var string $content */
 
-use yii\widgets\ActiveForm;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use app\assets\LandingAsset;
-use app\models\LoginForm;
 
 LandingAsset::register($this);
-$loginForm = new LoginForm();
 ?>
 
 <?php $this->beginPage() ?>
@@ -120,33 +117,8 @@ $loginForm = new LoginForm();
                 </div>
             </div>
         </footer>
-        <section class="modal enter-form form-modal" id="enter-form">
-            <h2>Вход на сайт</h2>
-            <?php $form = ActiveForm::begin([
-                    'action' => ['/landing/login'],
-                    'id' => 'login-form',
-                    'enableAjaxValidation' => true,
-                    'validateOnSubmit' => true,
-                    'fieldConfig' => [
-                            'options' => ['tag' => 'p'],
-                            'labelOptions' => ['class' => 'form-modal-description'],
-                            'errorOptions' => ['class' => 'help-block'], //взял из прошлой формы, этого вообще в верстке нет
-                            'template' => "{label}\n{input}\n{error}",
-                    ],
-            ]); ?>
 
-            <?= $form->field($loginForm, 'email')
-                    ->input('email', ['class' => 'enter-form-email input input-middle'])
-                    ->label('Email'); ?>
 
-            <?= $form->field($loginForm, 'password')
-                    ->passwordInput(['class' => 'enter-form-email input input-middle'])
-                    ->label('Пароль'); ?>
-
-            <?= Html::submitButton('Войти', ['class' => 'button']); ?>
-            <?php ActiveForm::end(); ?>
-            <button class="form-modal-close" type="button">Закрыть</button>
-        </section>
     </div>
 
     <div class="overlay"></div>
