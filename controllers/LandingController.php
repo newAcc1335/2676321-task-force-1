@@ -12,30 +12,25 @@ class LandingController extends Controller
 {
     public $layout = 'landing';
 
-    public function actionIndex(): Response|string
+    public function actionIndex(): array|Response|string
     {
         if (!Yii::$app->user->isGuest) {
             return $this->redirect(['/tasks']);
         }
 
-        return $this->render('index');
-    }
+        $formModel = new LoginForm();
 
-    public function actionLogin(): Response|array
-    {
-        $form = new LoginForm();
-
-        if (Yii::$app->request->isAjax && $form->load(Yii::$app->request->post())) {
-            Yii::$app->response->format = Response::FORMAT_JSON;
-            return ActiveForm::validate($form);
+        if ($formModel->load(Yii::$app->request->post())) {
+            if (Yii::$app->request->isAjax) {
+                Yii::$app->response->format = Response::FORMAT_JSON;
+                return ActiveForm::validate($formModel);
+            }
+            if ($formModel->validate() && Yii::$app->user->login($formModel->getUser())) {
+                return $this->redirect(['/tasks']);
+            }
         }
 
-        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
-            Yii::$app->user->login($form->getUser());
-            return $this->redirect(['/tasks']);
-        }
-
-        return $this->redirect(['/landing']);
+        return $this->render('index', ['loginForm' => $formModel]);
     }
 
     public function actionLogout(): Response

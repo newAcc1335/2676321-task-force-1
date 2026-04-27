@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use RuntimeException;
 use yii\base\Model;
 use yii\db\Exception;
 use app\validators\MinLengthValidator;
@@ -61,7 +62,9 @@ class AddTaskForm extends Model
         $task->status = Tasks::STATUS_NEW;
         $task->created_at = date('Y-m-d H:i:s');
 
-        $task->save(false);
+        if (!$task->save()) {
+            throw new RuntimeException('Ошибка сохранения задачи');
+        }
 
         return $task;
     }

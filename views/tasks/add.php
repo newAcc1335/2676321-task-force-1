@@ -13,6 +13,7 @@ $this->title = 'Add Task';
 
 <div class="add-task-form regular-form">
     <?php $form = ActiveForm::begin([
+            'id' => 'task-form',
             'fieldConfig' => [
                     'options' => ['class' => 'form-group'],
                     'labelOptions' => ['class' => 'control-label'],
