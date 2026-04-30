@@ -2,12 +2,12 @@
 
 namespace App;
 
-use App\Actions\Action;
-use App\Actions\RespondAction;
-use App\Actions\StartAction;
-use App\Actions\CancelAction;
-use App\Actions\CompleteAction;
-use App\Actions\FailAction;
+use app\Actions\Action;
+use app\Actions\RespondAction;
+use app\Actions\StartAction;
+use app\Actions\CancelAction;
+use app\Actions\CompleteAction;
+use app\Actions\FailAction;
 
 /**
  * Класс Задание.
@@ -91,7 +91,7 @@ class Task
 
         return array_values(array_filter(
             $actions,
-            fn(Action $action) => $action->isAllowed($userId, $this->authorId, $this->executorId)
+            fn (Action $action) => $action->isAllowed($userId, $this->authorId, $this->executorId)
         ));
     }
 

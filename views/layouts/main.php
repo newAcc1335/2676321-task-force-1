@@ -3,8 +3,9 @@
 /** @var yii\web\View $this */
 /** @var string $content */
 
+use app\widgets\Alert;
 use app\assets\AppAsset;
-use yii\bootstrap5\Html;
+use yii\helpers\Html;
 use yii\helpers\Url;
 
 AppAsset::register($this);
@@ -76,6 +77,7 @@ $isRegistrationPage = Yii::$app->controller->route === 'registration/index';
     <?php endif; ?>
 
     <main class="<?= $this->params['mainClass'] ?? 'container' ?>">
+        <?= Alert::widget()?>
         <?= $content ?>
     </main>
 

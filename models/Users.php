@@ -23,6 +23,7 @@ use yii\web\IdentityInterface;
  * @property string|null $image_url
  * @property int|null $city_id
  * @property int $is_customer_only
+ * @property string|null $about
  *
  * @property Categories[] $categories
  * @property Cities $city
@@ -60,6 +61,7 @@ class Users extends ActiveRecord implements IdentityInterface
             [['created_at', 'birthday'], 'safe'],
             [['name', 'email', 'role'], 'required'],
             [['role'], 'string'],
+            [['about'], 'string'],
             [['city_id', 'is_customer_only'], 'integer'],
             [['name', 'email'], 'string', 'max' => 150],
             [['password_hash', 'image_url'], 'string', 'max' => 255],

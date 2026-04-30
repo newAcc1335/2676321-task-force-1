@@ -1,5 +1,8 @@
 <?php
 
+use app\src\Services\ResponseService;
+use app\src\Services\TaskService;
+
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
 
@@ -13,6 +16,13 @@ $config = [
     ],
     'defaultRoute' => 'landing/index',
     'components' => [
+        'assetManager' => [
+            'bundles' => [
+                'yii\bootstrap5\BootstrapAsset' => [
+                    'css' => [],
+                ],
+            ],
+        ],
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 't-_f_8fICwITweEsMZA3sdNTGqreCK85',
@@ -57,6 +67,12 @@ $config = [
                     'tasks/view/<id:\d+>' => 'tasks/view',
                     'users/view/<id:\d+>' => 'users/view',
             ],
+        ],
+        'taskService' => [
+            'class' => TaskService::class,
+        ],
+        'responseService' => [
+            'class' => ResponseService::class,
         ],
     ],
     'params' => $params,

@@ -3,6 +3,8 @@
 namespace app\models;
 
 use Yii;
+use app\Actions\Response\AcceptAction;
+use app\Actions\Response\RejectAction;
 
 /**
  * This is the model class for table "responses".
@@ -20,13 +22,12 @@ use Yii;
  */
 class Responses extends \yii\db\ActiveRecord
 {
-
     /**
      * ENUM field values
      */
-    const STATUS_PENDING = 'pending';
-    const STATUS_ACCEPTED = 'accepted';
-    const STATUS_REJECTED = 'rejected';
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_ACCEPTED = 'accepted';
+    public const STATUS_REJECTED = 'rejected';
 
     /**
      * {@inheritdoc}
@@ -158,5 +159,15 @@ class Responses extends \yii\db\ActiveRecord
     public function setStatusToRejected()
     {
         $this->status = self::STATUS_REJECTED;
+    }
+
+    public function getAvailableActions(int $userId): array
+    {
+        $actions = [
+            new AcceptAction(),
+            new RejectAction(),
+        ];
+
+        return array_filter($actions, fn ($action) => $action->isAllowed($userId, $this));
     }
 }

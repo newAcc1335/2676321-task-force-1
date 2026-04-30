@@ -1,15 +1,16 @@
 <?php
 
 /**
- * @var Tasks $tasks
+ * @var ActiveDataProvider $provider
  * @var Categories $categories
  * @var TasksForm $form
  */
 
+use yii\data\ActiveDataProvider;
 use yii\helpers\Url;
-use app\models\Tasks;
 use app\models\TasksForm;
 use app\models\Categories;
+use yii\widgets\LinkPager;
 
 $this->params['mainClass'] = 'main-content container';
 $this->title = 'Tasks';
@@ -17,7 +18,7 @@ $this->title = 'Tasks';
 
 <div class="left-column">
     <h3 class="head-main head-task">Новые задания</h3>
-    <?php foreach ($tasks as $task) : ?>
+    <?php foreach ($provider->getModels() as $task) : ?>
         <div class="task-card">
             <div class="header-task">
                 <a  href="<?= Url::to(['tasks/view', 'id' => $task->id]) ?>" class="link link--block link--big">
@@ -44,26 +45,22 @@ $this->title = 'Tasks';
             </div>
         </div>
     <?php endforeach; ?>
+
     <div class="pagination-wrapper">
-        <ul class="pagination-list">
-            <li class="pagination-item mark">
-                <a href="#" class="link link--page"></a>
-            </li>
-            <li class="pagination-item">
-                <a href="#" class="link link--page">1</a>
-            </li>
-            <li class="pagination-item pagination-item--active">
-                <a href="#" class="link link--page">2</a>
-            </li>
-            <li class="pagination-item">
-                <a href="#" class="link link--page">3</a>
-            </li>
-            <li class="pagination-item mark">
-                <a href="#" class="link link--page"></a>
-            </li>
-        </ul>
+        <?= LinkPager::widget([
+                'pagination' => $provider->getPagination(),
+                'options' => ['class' => 'pagination-list'],
+                'linkOptions' => ['class' => 'link link--page'],
+                'linkContainerOptions' => ['class' => 'pagination-item'],
+                'activePageCssClass' => 'pagination-item--active',
+                'prevPageLabel' => '',
+                'nextPageLabel' => '',
+                'prevPageCssClass' => 'pagination-item mark',
+                'nextPageCssClass' => 'pagination-item mark',
+        ]); ?>
     </div>
 </div>
+
 <div class="right-column">
    <div class="right-card black">
        <div class="search-form">
