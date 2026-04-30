@@ -2,10 +2,13 @@
 
 namespace app\controllers;
 
+use app\models\CompleteTaskForm;
+use app\models\ResponseForm;
+use Throwable;
 use Yii;
-use yii\db\Exception;
 use yii\filters\AccessControl;
 use yii\web\Controller;
+use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 use app\models\Categories;
@@ -21,15 +24,33 @@ class TasksController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['add'],
+                'only' => [
+                    'add',
+                    'respond-task',
+                    'complete-task',
+                    'accept-response',
+                    'reject-response',
+                    'run-task-action',
+                ],
                 'rules' => [
                     [
-                        'allow' => true,
                         'actions' => ['add'],
+                        'allow' => true,
                         'roles' => ['@'],
                         'matchCallback' => function () {
                             return Yii::$app->user->identity->isRoleAuthor();
                         },
+                    ],
+                    [
+                        'actions' => [
+                            'respond-task',
+                            'complete-task',
+                            'accept-response',
+                            'reject-response',
+                            'run-task-action',
+                        ],
+                        'allow' => true,
+                        'roles' => ['@'],
                     ],
                 ],
             ],
@@ -81,11 +102,17 @@ class TasksController extends Controller
             throw new NotFoundHttpException('Задание не найдено');
         }
 
-        return $this->render('view', ['task' => $task]);
+        $responseForm = new ResponseForm();
+        $completeForm = new CompleteTaskForm();
+
+        return $this->render(
+            'view',
+            ['task' => $task, 'responseForm' => $responseForm, 'completeForm' => $completeForm]
+        );
     }
 
     /**
-     * @throws Exception
+     * @throws
      */
     public function actionAdd(): Response|string
     {
@@ -102,46 +129,122 @@ class TasksController extends Controller
         return $this->render('add', ['addTaskForm' => $form, 'categories' => $categories]);
     }
 
-    /**
-     * @throws NotFoundHttpException
-     * @throws Exception
-     */
     public function actionAcceptResponse(int $id): Response
     {
         $response = Responses::findOne($id);
 
-        //потом поменять на разные
-        if (!$response || $response->task->author_id !== Yii::$app->user->id) {
+        if (!$response) {
             throw new NotFoundHttpException('Отклик не найден');
         }
 
-        $response->setStatusToAccepted();
-        $response->save(false);
+        $taskId = $response->task_id;
 
-        $task = $response->task;
-        $task->executor_id = $response->executor_id;
-        $task->setStatusToActive();
-        $task->save(false);
+        try {
+            Yii::$app->responseService->accept($id, Yii::$app->user->id);
+            Yii::$app->session->setFlash('success', 'Отклик принят');
+        } catch (Throwable $e) {
+            Yii::error($e, __METHOD__);
+            Yii::$app->session->setFlash('danger', 'Не удалось принять отклик');
+        }
 
-        return $this->redirect(['tasks/view', 'id' => $task->id]);
+        return $this->redirect(['tasks/view', 'id' => $taskId]);
     }
 
-    /**
-     * @throws Exception
-     * @throws NotFoundHttpException
-     */
     public function actionRejectResponse(int $id): Response
     {
         $response = Responses::findOne($id);
 
-        //потом поменять на разные
-        if (!$response || $response->task->author_id !== Yii::$app->user->id) {
+        if (!$response) {
             throw new NotFoundHttpException('Отклик не найден');
         }
 
-        $response->setStatusToRejected();
-        $response->save(false);
+        $taskId = $response->task_id;
 
-        return $this->redirect(['tasks/view', 'id' => $response->task->id]);
+        try {
+            Yii::$app->responseService->reject($id, Yii::$app->user->id);
+            Yii::$app->session->setFlash('success', 'Отклик отклонён');
+        } catch (Throwable $e) {
+            Yii::error($e, __METHOD__);
+            Yii::$app->session->setFlash('danger', 'Не удалось отклонить отклик');
+        }
+
+        return $this->redirect(['tasks/view', 'id' => $taskId]);
+    }
+
+    public function actionRunTaskAction(int $taskId, string $actionCode): Response
+    {
+        $task = Tasks::findOne($taskId);
+
+        if (!$task) {
+            throw new NotFoundHttpException('Задача не найдена');
+        }
+
+        $actions = $task->getAllowedActions(Yii::$app->user->id);
+
+        foreach ($actions as $action) {
+            if ($action->getActionCode() === $actionCode) {
+
+                $method = $action->getServiceMethod();
+
+                Yii::$app->taskService->$method($taskId, Yii::$app->user->id);
+
+                return $this->redirect(['tasks/view', 'id' => $taskId]);
+            }
+        }
+
+        throw new ForbiddenHttpException('Действие недоступно');
+    }
+
+    public function actionRespondTask(int $id): Response|string
+    {
+        $task = Tasks::findOne($id);
+
+        if (!$task) {
+            throw new NotFoundHttpException('Задание не найдено');
+        }
+
+        $completeForm = new CompleteTaskForm();
+        $responseForm = new ResponseForm();
+
+        if ($responseForm->load(Yii::$app->request->post()) && $responseForm->validate()) {
+
+            Yii::$app->taskService->respondTask($id, Yii::$app->user->id, $responseForm->comment, $responseForm->price);
+
+            Yii::$app->session->setFlash('success', 'Отклик добавлен');
+
+            return $this->redirect(['tasks/view', 'id' => $id]);
+        }
+
+        return $this->render('view', [
+            'task' => $task,
+            'responseForm' => $responseForm,
+            'completeForm' => $completeForm,
+        ]);
+    }
+
+    public function actionCompleteTask(int $id): Response|string
+    {
+        $task = Tasks::findOne($id);
+
+        if (!$task) {
+            throw new NotFoundHttpException('Задание не найдено');
+        }
+
+        $completeForm = new CompleteTaskForm();
+        $responseForm = new ResponseForm();
+
+        if ($completeForm->load(Yii::$app->request->post()) && $completeForm->validate()) {
+
+            Yii::$app->taskService->completeTask($id, Yii::$app->user->id, $completeForm->comment, $completeForm->rating);
+            Yii::$app->session->setFlash('success', 'Задание завершено');
+
+            return $this->redirect(['tasks/view', 'id' => $id]);
+        }
+
+        return $this->render('view', [
+            'task' => $task,
+            'responseForm' => $responseForm,
+            'completeForm' => $completeForm,
+        ]);
     }
 }

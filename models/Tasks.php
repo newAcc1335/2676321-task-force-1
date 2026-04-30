@@ -6,6 +6,12 @@ use Yii;
 use yii\base\InvalidConfigException;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use app\Actions\StartAction;
+use app\Actions\RespondAction;
+use app\Actions\CancelAction;
+use app\Actions\CompleteAction;
+use app\Actions\FailAction;
+use app\Actions\Action;
 
 /**
  * This is the model class for table "tasks".
@@ -17,7 +23,7 @@ use yii\db\ActiveRecord;
  * @property int $category_id
  * @property int|null $city_id
  * @property string|null $location_name
- * @property string $location
+ * @property string|null $location
  * @property int|null $budget
  * @property string|null $due_date
  * @property string $status
@@ -60,7 +66,7 @@ class Tasks extends ActiveRecord
             [['city_id', 'location_name', 'budget', 'due_date', 'executor_id'], 'default', 'value' => null],
             [['status'], 'default', 'value' => 'new'],
             [['created_at', 'due_date'], 'safe'],
-            [['title', 'description', 'category_id', 'location', 'author_id'], 'required'],
+            [['title', 'description', 'category_id', 'author_id'], 'required'],
             [['description', 'location', 'status'], 'string'],
             [['category_id', 'city_id', 'budget', 'author_id', 'executor_id'], 'integer'],
             [['title', 'location_name'], 'string', 'max' => 255],
@@ -273,5 +279,25 @@ class Tasks extends ActiveRecord
     public function getDueDateFormatted(): string
     {
         return $this->due_date ? Yii::$app->formatter->asDatetime($this->due_date) : 'Не указан';
+    }
+
+    public function getAllowedActions(int $userId): array
+    {
+        $actions = [
+            new RespondAction(),
+            new CancelAction(),
+            new CompleteAction(),
+            new FailAction(),
+        ];
+
+        return array_values(array_filter(
+            $actions,
+            fn (Action $action) => $action->isAllowed($userId, $this)
+        ));
+    }
+
+    public function hasResponseFrom(int $userId): bool
+    {
+        return array_any($this->responses, fn ($response) => $response->executor_id === $userId);
     }
 }

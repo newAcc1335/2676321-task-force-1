@@ -27,7 +27,6 @@ class MinLengthValidator extends Validator
      */
     public function validateAttribute($model, $attribute): void
     {
-        var_dump($attribute, $model->$attribute);
         $length = mb_strlen(preg_replace('/\s+/', '', (string)$model->$attribute));
 
         if ($length < $this->min) {

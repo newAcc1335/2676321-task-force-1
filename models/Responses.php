@@ -3,6 +3,8 @@
 namespace app\models;
 
 use Yii;
+use app\Actions\Response\AcceptAction;
+use app\Actions\Response\RejectAction;
 
 /**
  * This is the model class for table "responses".
@@ -157,5 +159,15 @@ class Responses extends \yii\db\ActiveRecord
     public function setStatusToRejected()
     {
         $this->status = self::STATUS_REJECTED;
+    }
+
+    public function getAvailableActions(int $userId): array
+    {
+        $actions = [
+            new AcceptAction(),
+            new RejectAction(),
+        ];
+
+        return array_filter($actions, fn ($action) => $action->isAllowed($userId, $this));
     }
 }

@@ -21,8 +21,6 @@ use Yii;
  */
 class Reviews extends \yii\db\ActiveRecord
 {
-
-
     /**
      * {@inheritdoc}
      */
@@ -37,8 +35,7 @@ class Reviews extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['created_at'], 'safe'],
-            [['task_id', 'author_id', 'executor_id', 'comment', 'rating'], 'required'],
+            [['task_id', 'author_id', 'executor_id', 'comment', 'rating', 'created_at'], 'required'],
             [['task_id', 'author_id', 'executor_id', 'rating'], 'integer'],
             [['comment'], 'string'],
             [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Tasks::class, 'targetAttribute' => ['task_id' => 'id']],

@@ -1,100 +1,99 @@
 <?php
 
 /** @var Tasks $task */
+/** @var ResponseForm $responseForm */
+/** @var CompleteTaskForm $completeForm */
 
-use app\models\Tasks;
+use app\models\CompleteTaskForm;
+use app\models\ResponseForm;
 use yii\helpers\Html;
 use yii\helpers\Url;
+use app\models\Tasks;
 
 $this->params['mainClass'] = 'main-content container';
-$this->title = 'my task =)';
+$this->title = 'Task №' . $task->id;
+
+$userId = Yii::$app->user->id;
+$isAuthor = $userId === $task->author_id;
+$taskActions = $task->getAllowedActions($userId);
 ?>
 
 <div class="left-column">
     <div class="head-wrapper">
-        <h3 class="head-main"><?= Html::encode($task->title) ?></h3>
+        <h3 class="head-main"><?= Html::encode($task->title); ?></h3>
 
         <?php if ($task->budget): ?>
-            <p class="price price--big"><?= $task->budget ?> ₽</p>
+            <p class="price price--big"><?= $task->budget; ?> ₽</p>
         <?php endif; ?>
     </div>
 
-    <p class="task-description"><?= Html::encode($task->description); ?></p>
-    <a href="#" class="button button--blue action-btn" data-action="act_response">Откликнуться на задание</a>
-    <a href="#" class="button button--orange action-btn" data-action="refusal">Отказаться от задания</a>
-    <a href="#" class="button button--pink action-btn" data-action="completion">Завершить задание</a>
+    <p class="task-description"><?= Yii::$app->formatter->asNtext($task->description); ?></p>
+    <?php foreach ($taskActions as $action): ?>
+        <a href="<?= $action->getHref($task->id) ?>"
+           class="button action-btn <?= $action->getButtonClass() ?>"
+           data-action="<?= $action->getActionCode() ?>">
+            <?= $action->getName() ?>
+        </a>
+    <?php endforeach; ?>
+
     <div class="task-map">
         <img class="map" src="/img/map.png" width="725"
              height="346" alt="<?= Html::encode($task->location_name ?? ''); ?>">
         <p class="map-address town"><?= Html::encode($task->city->name ?? ''); ?></p>
         <p class="map-address"><?= Html::encode($task->location_name ?? ''); ?></p>
     </div>
-    <h4 class="head-regular">Отклики на задание</h4>
 
-    <?php foreach ($task->responses as $response): ?>
-        <div class="response-card">
-            <img class="customer-photo" src=" <?=Html::encode($response->executor->image_url); ?>" width="146" height="156" alt="Фото заказчиков">
-            <div class="feedback-wrapper">
-                <a href="#" class="link link--block link--big">
-                    <?= Html::encode($response->executor->name ?? 'Безымянный'); ?>
-                </a>
+    <?php if ($isAuthor || $task->hasResponseFrom($userId)): ?>
+        <h4 class="head-regular">Отклики на задание</h4>
 
-                <!-- это потом заменить из users/view, надо выделить в отдельную штуку-->
-                <div class="response-wrapper">
-                    <div class="stars-rating small"><span class="fill-star">&nbsp;</span><span class="fill-star">&nbsp;</span><span class="fill-star">&nbsp;</span><span class="fill-star">&nbsp;</span><span>&nbsp;</span></div>
-                    <p class="reviews">2 отзыва</p>
+        <?php foreach ($task->responses as $response): ?>
+            <?php if (!$isAuthor && $response->executor_id !== $userId) {
+                continue;
+            }
+            $responseActions = $response->getAvailableActions($userId); ?>
+
+            <div class="response-card">
+                <img class="customer-photo" src=" <?=Html::encode($response->executor->image_url); ?>" width="146" height="156" alt="Фото заказчиков">
+                <div class="feedback-wrapper">
+                    <a href="#" class="link link--block link--big">
+                        <?= Html::encode($response->executor->name ?? 'Безымянный'); ?>
+                    </a>
+
+                    <!-- это потом заменить из users/view, надо выделить в отдельную штуку-->
+                    <div class="response-wrapper">
+                        <div class="stars-rating small"><span class="fill-star">&nbsp;</span><span class="fill-star">&nbsp;</span><span class="fill-star">&nbsp;</span><span class="fill-star">&nbsp;</span><span>&nbsp;</span></div>
+                        <p class="reviews">2 отзыва</p>
+                    </div>
+
+                    <p class="response-message"><?= Html::encode($response->comment) ?></p>
                 </div>
 
-                <p class="response-message"><?= Html::encode($response->comment) ?></p>
-            </div>
+                <div class="feedback-wrapper">
+                    <p class="info-text">
+                        <span class="current-time">
+                            <?= Yii::$app->formatter->asRelativeTime($response->created_at); ?>
+                        </span>
+                    </p>
 
-            <div class="feedback-wrapper">
-                <p class="info-text">
-                    <span class="current-time">
-                        <?= Yii::$app->formatter->asRelativeTime($response->created_at); ?>
-                    </span>
-                </p>
-
-                <p class="price price--small"><?= Html::encode($response->price); ?> ₽</p>
-            </div>
-
-            <?php if (Yii::$app->user->id === $task->author_id && $task->isStatusNew() && $response->isStatusPending()): ?>
-                <div class="button-popup">
-                    <a href="<?= Url::to(['tasks/accept-response', 'id' => $response->id]); ?>"
-                       class="button button--blue button--small">Принять</a>
-                    <a href="<?= Url::to(['tasks/reject-response', 'id' => $response->id]); ?>"
-                       class="button button--orange button--small">Отказать</a>
+                    <p class="price price--small"><?= Html::encode($response->price); ?> ₽</p>
                 </div>
-            <?php endif; ?>
-        </div>
-    <?php endforeach; ?>
 
-
-    <!-- ТУТ СТАРЫЕ
-    <div class="response-card">
-        <img class="customer-photo" src="/img/man-glasses.png" width="146" height="156" alt="Фото заказчиков">
-        <div class="feedback-wrapper">
-            <a href="#" class="link link--block link--big">Астахов Павел</a>
-            <div class="response-wrapper">
-                <div class="stars-rating small"><span class="fill-star">&nbsp;</span><span class="fill-star">&nbsp;</span><span class="fill-star">&nbsp;</span><span class="fill-star">&nbsp;</span><span>&nbsp;</span></div>
-                <p class="reviews">2 отзыва</p>
+                <?php if (!empty($responseActions)): ?>
+                    <div class="button-popup">
+                        <?php foreach ($responseActions as $action): ?>
+                            <a href="<?= Url::to([
+                                    'tasks/' . $action->getActionCode() . '-response',
+                                    'id' => $response->id
+                            ]) ?>"
+                               class="button <?= $action->getButtonClass(); ?> button--small">
+                                <?= $action->getName(); ?>
+                            </a>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
             </div>
-            <p class="response-message">
-                Могу сделать всё в лучшем виде. У меня есть необходимый опыт и инструменты.
-            </p>
-
-        </div>
-        <div class="feedback-wrapper">
-            <p class="info-text"><span class="current-time">25 минут </span>назад</p>
-            <p class="price price--small">3700 ₽</p>
-        </div>
-        <div class="button-popup">
-            <a href="#" class="button button--blue button--small">Принять</a>
-            <a href="#" class="button button--orange button--small">Отказать</a>
-        </div>
-    </div>
-    -->
-
+        <?php endforeach; ?>
+    <?php endif; ?>
 </div>
 <div class="right-column">
     <div class="right-card black info-card">
@@ -124,3 +123,8 @@ $this->title = 'my task =)';
         </ul>
     </div>
 </div>
+
+<?= $this->render('_response_modal', ['task' => $task, 'responseForm' => $responseForm]); ?>
+<?= $this->render('_complete_modal', ['task' => $task, 'completeForm' => $completeForm]); ?>
+<?= $this->render('_fail_modal', ['task' => $task]); ?>
+<div class="overlay <?= ($completeForm->hasErrors() || $responseForm->hasErrors()) ? 'db' : '' ?>"></div>

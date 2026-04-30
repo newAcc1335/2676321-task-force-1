@@ -1,5 +1,8 @@
 <?php
 
+use app\src\Services\ResponseService;
+use app\src\Services\TaskService;
+
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
 
@@ -57,6 +60,12 @@ $config = [
                     'tasks/view/<id:\d+>' => 'tasks/view',
                     'users/view/<id:\d+>' => 'users/view',
             ],
+        ],
+        'taskService' => [
+            'class' => TaskService::class,
+        ],
+        'responseService' => [
+            'class' => ResponseService::class,
         ],
     ],
     'params' => $params,
