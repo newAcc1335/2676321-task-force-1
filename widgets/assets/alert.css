@@ -33,3 +33,22 @@
     color: #ef6c00;
     border: 1px solid #ffcc80;
 }
+
+.btn-close {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    opacity: 0.6;
+    color: inherit;
+    padding: 0;
+    line-height: 1;
+}
+
+.btn-close:hover {
+    opacity: 1;
+}
+
+.btn-close::before {
+    content: '×';
+}

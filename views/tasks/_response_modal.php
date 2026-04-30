@@ -8,7 +8,7 @@ use yii\helpers\Html;
 
 ?>
 
-<section class="pop-up pop-up--act_response pop-up--close">
+<section class="pop-up pop-up--respond pop-up--close">
     <div class="pop-up--wrapper">
         <h4>Добавление отклика</h4>
         <p class="pop-up-text">

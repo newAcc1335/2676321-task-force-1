@@ -127,4 +127,4 @@ $taskActions = $task->getAllowedActions($userId);
 <?= $this->render('_response_modal', ['task' => $task, 'responseForm' => $responseForm]); ?>
 <?= $this->render('_complete_modal', ['task' => $task, 'completeForm' => $completeForm]); ?>
 <?= $this->render('_fail_modal', ['task' => $task]); ?>
-<div class="overlay <?= ($completeForm->hasErrors() || $responseForm->hasErrors()) ? 'db' : '' ?>"></div>
+<div class="overlay <?= ($completeForm->hasErrors() || $responseForm->hasErrors()) ? 'db' : ''; ?>"></div>

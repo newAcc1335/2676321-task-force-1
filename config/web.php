@@ -16,6 +16,13 @@ $config = [
     ],
     'defaultRoute' => 'landing/index',
     'components' => [
+        'assetManager' => [
+            'bundles' => [
+                'yii\bootstrap5\BootstrapAsset' => [
+                    'css' => [],
+                ],
+            ],
+        ],
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 't-_f_8fICwITweEsMZA3sdNTGqreCK85',

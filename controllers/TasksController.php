@@ -6,6 +6,7 @@ use app\models\CompleteTaskForm;
 use app\models\ResponseForm;
 use Throwable;
 use Yii;
+use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\ForbiddenHttpException;
@@ -61,7 +62,7 @@ class TasksController extends Controller
     {
         $form = new TasksForm();
         $categories = Categories::find()->all();
-        $tasks = Tasks::find()->where(['status' => Tasks::STATUS_NEW]);
+        $tasks = Tasks::find()->where(['status' => Tasks::STATUS_NEW])->with('category');
 
         if ($form->load(Yii::$app->request->get())) {
             if (!empty($form->categories)) {
@@ -83,9 +84,15 @@ class TasksController extends Controller
             }
         }
 
-        $tasks = $tasks->with('category')->all();
+        $provider = new ActiveDataProvider([
+            'query' => $tasks,
+            'pagination' => [
+                'pageSize' => 5,
+                'pageSizeParam' => false,
+            ],
+        ]);
 
-        return $this->render('index', ['tasks' => $tasks, 'form' => $form, 'categories' => $categories]);
+        return $this->render('index', ['provider' => $provider, 'form' => $form, 'categories' => $categories]);
     }
 
     /**
