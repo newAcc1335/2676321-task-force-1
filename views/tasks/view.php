@@ -14,8 +14,8 @@ $this->params['mainClass'] = 'main-content container';
 $this->title = 'Task №' . $task->id;
 
 $userId = Yii::$app->user->id;
-$isAuthor = $userId === $task->author_id;
 $taskActions = $task->getAllowedActions($userId);
+$visibleResponses = $task->getVisibleResponses($userId);
 ?>
 
 <div class="left-column">
@@ -43,19 +43,19 @@ $taskActions = $task->getAllowedActions($userId);
         <p class="map-address"><?= Html::encode($task->location_name ?? ''); ?></p>
     </div>
 
-    <?php if ($isAuthor || $task->hasResponseFrom($userId)): ?>
+    <?php if (!empty($visibleResponses)): ?>
         <h4 class="head-regular">Отклики на задание</h4>
 
-        <?php foreach ($task->responses as $response): ?>
-            <?php if (!$isAuthor && $response->executor_id !== $userId) {
-                continue;
-            }
-            $responseActions = $response->getAvailableActions($userId); ?>
+        <?php foreach ($visibleResponses as $response): ?>
+            <?php $responseActions = $response->getAvailableActions($userId); ?>
 
             <div class="response-card">
-                <img class="customer-photo" src=" <?=Html::encode($response->executor->image_url); ?>" width="146" height="156" alt="Фото заказчиков">
+                <img class="customer-photo"
+                     src="<?=Html::encode($response->executor->image_url ?? '/img/man-glasses.png'); ?>"
+                     width="146" height="156" alt="Фото заказчиков">
                 <div class="feedback-wrapper">
-                    <a href="#" class="link link--block link--big">
+                    <a href="<?= Url::to(['/users/view', 'id' => $response->executor_id]); ?>"
+                       class="link link--block link--big">
                         <?= Html::encode($response->executor->name ?? 'Безымянный'); ?>
                     </a>
 
@@ -75,26 +75,28 @@ $taskActions = $task->getAllowedActions($userId);
                         </span>
                     </p>
 
-                    <p class="price price--small"><?= Html::encode($response->price); ?> ₽</p>
+                    <?php if ($response->price): ?>
+                        <p class="price price--small"><?= Html::encode($response->price); ?> ₽</p>
+                    <?php endif; ?>
                 </div>
 
-                <?php if (!empty($responseActions)): ?>
-                    <div class="button-popup">
-                        <?php foreach ($responseActions as $action): ?>
-                            <a href="<?= Url::to([
-                                    'tasks/' . $action->getActionCode() . '-response',
-                                    'id' => $response->id
-                            ]) ?>"
-                               class="button <?= $action->getButtonClass(); ?> button--small">
-                                <?= $action->getName(); ?>
-                            </a>
-                        <?php endforeach; ?>
-                    </div>
-                <?php endif; ?>
+                <div class="button-popup">
+                    <?php foreach ($responseActions as $action): ?>
+                        <a href="<?= Url::to([
+                                'tasks/' . $action->getActionCode() . '-response',
+                                'id' => $response->id
+                        ]) ?>"
+                           class="button <?= $action->getButtonClass(); ?> button--small">
+                            <?= $action->getName(); ?>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+
             </div>
         <?php endforeach; ?>
     <?php endif; ?>
 </div>
+
 <div class="right-column">
     <div class="right-card black info-card">
         <h4 class="head-card">Информация о задании</h4>
@@ -111,16 +113,21 @@ $taskActions = $task->getAllowedActions($userId);
     </div>
     <div class="right-card white file-card">
         <h4 class="head-card">Файлы задания</h4>
-        <ul class="enumeration-list">
-            <li class="enumeration-item">
-                <a href="#" class="link link--block link--clip">my_picture.jpg</a>
-                <p class="file-size">356 Кб</p>
-            </li>
-            <li class="enumeration-item">
-                <a href="#" class="link link--block link--clip">information.docx</a>
-                <p class="file-size">12 Кб</p>
-            </li>
-        </ul>
+        <?php if ($task->taskFiles): ?>
+            <ul class="enumeration-list">
+                <?php foreach ($task->taskFiles as $file): ?>
+                    <li class="enumeration-item">
+                        <a href="<?= $file->file_path; ?>"
+                           class="link link--block link--clip"
+                           download>
+                            <?= Html::encode(basename($file->file_path)) ?>
+                        </a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php else: ?>
+            <p>Файлов нет =(</p>
+        <?php endif; ?>
     </div>
 </div>
 

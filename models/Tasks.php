@@ -300,4 +300,13 @@ class Tasks extends ActiveRecord
     {
         return array_any($this->responses, fn ($response) => $response->executor_id === $userId);
     }
+
+    public function getVisibleResponses(int $userId): array
+    {
+        if ($this->author_id === $userId) {
+            return $this->responses;
+        }
+
+        return array_filter($this->responses, fn ($r) => $r->executor_id === $userId);
+    }
 }

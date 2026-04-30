@@ -14,6 +14,7 @@ $this->title = 'Add Task';
 <div class="add-task-form regular-form">
     <?php $form = ActiveForm::begin([
             'id' => 'task-form',
+            'options' => ['enctype' => 'multipart/form-data'],
             'fieldConfig' => [
                     'options' => ['class' => 'form-group'],
                     'labelOptions' => ['class' => 'control-label'],
@@ -24,38 +25,43 @@ $this->title = 'Add Task';
     <h3 class="head-main head-main">Публикация нового задания</h3>
 
     <?= $form->field($addTaskForm, 'title')
-            ->textInput()
-            ->label('Опишите суть работы'); ?>
+        ->textInput()
+        ->label('Опишите суть работы'); ?>
 
     <?= $form->field($addTaskForm, 'description')
-            ->textarea()
-            ->label('Подробности задания'); ?>
+        ->textarea()
+        ->label('Подробности задания'); ?>
 
     <?= $form->field($addTaskForm, 'category_id')
-            ->dropDownList(ArrayHelper::map($categories, 'id', 'name'))
-            ->label('Категория'); ?>
+        ->dropDownList(ArrayHelper::map($categories, 'id', 'name'))
+        ->label('Категория'); ?>
 
     <?= $form->field($addTaskForm, 'location_name')
-            ->textInput(['class' => 'location-icon'])
-            ->label('Локация'); ?>
+        ->textInput(['class' => 'location-icon'])
+        ->label('Локация'); ?>
 
     <div class="half-wrapper">
         <?= $form->field($addTaskForm, 'budget')
-                ->textInput(['class' => 'budget-icon'])
-                ->label('Бюджет'); ?>
+            ->textInput(['class' => 'budget-icon'])
+            ->label('Бюджет'); ?>
 
         <?= $form->field($addTaskForm, 'due_date')
-                ->input('date')
-                ->label('Срок исполнения'); ?>
+            ->input('date')
+            ->label('Срок исполнения'); ?>
     </div>
 
     <p class="form-label">Файлы</p>
     <div class="new-file">
-        Добавить новый файл
+        <?= Html::fileInput('AddTaskForm[files][]', null, [
+            'multiple' => true,
+            'id' => 'button-input',
+            'style' => 'display:none',
+        ]) ?>
+        <label for="button-input">Добавить новый файл</label>
     </div>
 
     <?= Html::submitInput('Опубликовать', [
-            'class' => 'button button--blue'
+        'class' => 'button button--blue'
     ]); ?>
 
     <?php ActiveForm::end(); ?>

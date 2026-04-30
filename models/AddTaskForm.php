@@ -3,6 +3,7 @@
 namespace app\models;
 
 use RuntimeException;
+use Yii;
 use yii\base\Model;
 use yii\db\Exception;
 use app\validators\MinLengthValidator;
@@ -41,7 +42,7 @@ class AddTaskForm extends Model
             ['title', MinLengthValidator::class, 'min' => 10],
             ['description', MinLengthValidator::class, 'min' => 30],
             ['due_date', 'date', 'format' => 'php:Y-m-d', 'message' => 'Указана некорректная дата'],
-            ['files', 'file', 'skipOnEmpty' => true],
+            ['files', 'file', 'skipOnEmpty' => true, 'maxFiles' => 13],
         ];
     }
 
@@ -64,6 +65,23 @@ class AddTaskForm extends Model
 
         if (!$task->save()) {
             throw new RuntimeException('Ошибка сохранения задачи');
+        }
+
+        foreach ($this->files as $file) {
+            $fileName = uniqid() . '_' . $file->baseName . '.' . $file->extension;
+            $fileDir = Yii::getAlias('@webroot/files/');
+
+            if (!is_dir($fileDir)) {
+                mkdir($fileDir, 0755, true);
+            }
+
+            $file->saveAs($fileDir . $fileName);
+
+            $taskFile = new TaskFiles();
+            $taskFile->task_id = $task->id;
+            $taskFile->file_path = '/files/' . $fileName;
+            $taskFile->created_at = date('Y-m-d H:i:s');
+            $taskFile->save();
         }
 
         return $task;
