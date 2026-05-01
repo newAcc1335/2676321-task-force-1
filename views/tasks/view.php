@@ -134,22 +134,23 @@ $this->registerJsFile(
             <dd><?= Html::encode($task->displayStatus()) ?></dd>
         </dl>
     </div>
-    <div class="right-card white file-card">
-        <h4 class="head-card">Файлы задания</h4>
-        <?php if ($task->taskFiles): ?>
-            <ul class="enumeration-list">
-                <?php foreach ($task->taskFiles as $file): ?>
-                    <li class="enumeration-item">
-                        <a href="<?= Html::encode($file->file_path); ?>"
-                           class="link link--block link--clip"
-                           download>
-                            <?= Html::encode(basename($file->file_path)) ?>
-                        </a>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-        <?php endif; ?>
-    </div>
+    <?php if ($task->taskFiles): ?>
+        <div class="right-card white file-card">
+            <h4 class="head-card">Файлы задания</h4>
+
+                <ul class="enumeration-list">
+                    <?php foreach ($task->taskFiles as $file): ?>
+                        <li class="enumeration-item">
+                            <a href="<?= Html::encode($file->file_path); ?>"
+                               class="link link--block link--clip"
+                               download>
+                                <?= Html::encode(basename($file->file_path)) ?>
+                            </a>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+        </div>
+    <?php endif; ?>
 </div>
 
 <?= $this->render('_response_modal', ['task' => $task, 'responseForm' => $responseForm]); ?>
