@@ -15,7 +15,7 @@ class UsersController extends Controller
     {
         $user = Users::findOne($id);
 
-        if (!$user) {
+        if (!$user || !$user->isRoleExecutor()) {
             throw new NotFoundHttpException('Пользователь не найден');
         }
 

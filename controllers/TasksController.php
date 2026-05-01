@@ -17,6 +17,7 @@ use app\models\TasksForm;
 use app\models\Tasks;
 use app\models\AddTaskForm;
 use app\models\Responses;
+use yii\web\UploadedFile;
 
 class TasksController extends Controller
 {
@@ -127,6 +128,8 @@ class TasksController extends Controller
         $categories = Categories::find()->all();
 
         if ($form->load(Yii::$app->request->post())) {
+            $form->files = UploadedFile::getInstances($form, 'files');
+
             if ($form->validate()) {
                 $task = $form->addTask(Yii::$app->user->id);
                 return $this->redirect(['/tasks/view', 'id' => $task->id]);
