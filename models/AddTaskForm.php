@@ -2,10 +2,12 @@
 
 namespace app\models;
 
-use RuntimeException;
 use Yii;
 use yii\base\Model;
 use yii\db\Exception;
+use yii\db\Expression;
+use RuntimeException;
+use app\src\Services\GeocoderService;
 use app\validators\MinLengthValidator;
 
 class AddTaskForm extends Model
@@ -63,7 +65,18 @@ class AddTaskForm extends Model
         $task->status = Tasks::STATUS_NEW;
         $task->created_at = date('Y-m-d H:i:s');
 
+        if (!empty($this->location_name)) {
+            $coordinates = new GeocoderService()->search($this->location_name);
+
+            if ($coordinates !== null) {
+                $task->location = new Expression(
+                    sprintf("ST_GeomFromText('POINT(%f %f)')", $coordinates['lng'], $coordinates['lat'])
+                );
+            }
+        }
+
         if (!$task->save()) {
+            Yii::error($task->getErrors(), 'TASK_SAVE_ERROR');
             throw new RuntimeException('Ошибка сохранения задачи');
         }
 

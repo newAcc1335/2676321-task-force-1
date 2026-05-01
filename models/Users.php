@@ -324,4 +324,61 @@ class Users extends ActiveRecord implements IdentityInterface
     {
         return Yii::$app->security->validatePassword($password, $this->password_hash);
     }
+
+
+    public function getExecutorReviews(): ActiveQuery
+    {
+        return $this->hasMany(Reviews::class, ['executor_id' => 'id'])->with(['author', 'task']);
+    }
+
+    public function getAge(): ?int
+    {
+        if (!$this->birthday) {
+            return null;
+        }
+        return (int) new \DateTime($this->birthday)->diff(new \DateTime())->y;
+    }
+
+    public function getIsActiveExecutor(): bool
+    {
+        return Tasks::find()->where(['executor_id' => $this->id, 'status' => Tasks::STATUS_ACTIVE])->exists();
+    }
+
+    public function getRank(): int
+    {
+        $avgRating = Reviews::find()->where(['executor_id' => $this->id])->average('rating') ?? 0;
+
+        $rankPlace = Users::find()
+            ->select(['users.id'])
+            ->where(['users.role' => self::ROLE_EXECUTOR])
+            ->joinWith('reviews0', false)
+            ->groupBy('users.id')
+            ->having('AVG(reviews.rating) > :avg', [':avg' => $avgRating])
+            ->count();
+
+        return (int)$rankPlace + 1;
+    }
+
+    public function isContactVisible(int $viewerId): bool
+    {
+        if (!$this->is_customer_only) {
+            return true;
+        }
+
+        return Tasks::find()
+            ->where(['executor_id' => $this->id, 'author_id' => $viewerId])
+            ->exists();
+    }
+
+
+    public function getReviewsText(): string
+    {
+        $countReviews = $this->getReviews0()->count();
+
+        return Yii::t(
+            'app',
+            '{n, plural, =0{нет отзывов} one{# отзыв} few{# отзыва} many{# отзывов} other{# отзывов}}',
+            ['n' => $countReviews]
+        );
+    }
 }

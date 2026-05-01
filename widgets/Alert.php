@@ -4,8 +4,9 @@ namespace app\widgets;
 
 use app\assets\AlertAsset;
 use Yii;
+use yii\bootstrap5\Widget;
 
-class Alert extends \yii\bootstrap5\Widget
+class Alert extends Widget
 {
     public $alertTypes = [
         'error'   => 'alert-danger',

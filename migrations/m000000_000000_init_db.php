@@ -36,7 +36,6 @@ class m000000_000000_init extends Migration
     private function runSqlFile(string $path): void
     {
         $sql = file_get_contents($path);
-
         $sql = preg_replace('/^\s*USE\s+\w+\s*;\s*/mi', '', $sql);
 
         $statements = array_filter(

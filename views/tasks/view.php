@@ -6,9 +6,11 @@
 
 use app\models\CompleteTaskForm;
 use app\models\ResponseForm;
+use app\widgets\StarsWidget;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use app\models\Tasks;
+use yii\web\View;
 
 $this->params['mainClass'] = 'main-content container';
 $this->title = 'Task №' . $task->id;
@@ -16,6 +18,11 @@ $this->title = 'Task №' . $task->id;
 $userId = Yii::$app->user->id;
 $taskActions = $task->getAllowedActions($userId);
 $visibleResponses = $task->getVisibleResponses($userId);
+
+$this->registerJsFile(
+    'https://api-maps.yandex.ru/2.1/?apikey=' . Yii::$app->params['yandexApiKey'] . '&lang=ru_RU',
+    ['position' => View::POS_HEAD]
+);
 ?>
 
 <div class="left-column">
@@ -36,12 +43,27 @@ $visibleResponses = $task->getVisibleResponses($userId);
         </a>
     <?php endforeach; ?>
 
-    <div class="task-map">
-        <img class="map" src="/img/map.png" width="725"
-             height="346" alt="<?= Html::encode($task->location_name ?? ''); ?>">
-        <p class="map-address town"><?= Html::encode($task->city->name ?? ''); ?></p>
-        <p class="map-address"><?= Html::encode($task->location_name ?? ''); ?></p>
-    </div>
+    <?php if ($task->location): ?>
+        <?php $coords = $task->getCoordinates(); ?>
+        <div class="task-map">
+            <div id="map" class="map" style="width: 725px; height: 346px;"></div>
+            <p class="map-address town"><?= Html::encode($task->city->name ?? '') ?></p>
+            <p class="map-address"><?= Html::encode($task->location_name ?? '') ?></p>
+        </div>
+
+        <?php $this->registerJs("
+            ymaps.ready(function () {
+                var myMap = new ymaps.Map('map', {
+                    center: [{$coords['lat']}, {$coords['lng']}],
+                    zoom: 15
+                });
+                myMap.geoObjects.add(new ymaps.Placemark(
+                    [{$coords['lat']}, {$coords['lng']}],
+                    { balloonContent: '" . addslashes($task->location_name ?? '') . "' }
+                ));
+            });
+        ") ?>
+    <?php endif; ?>
 
     <?php if (!empty($visibleResponses)): ?>
         <h4 class="head-regular">Отклики на задание</h4>
@@ -59,10 +81,11 @@ $visibleResponses = $task->getVisibleResponses($userId);
                         <?= Html::encode($response->executor->name ?? 'Безымянный'); ?>
                     </a>
 
-                    <!-- это потом заменить из users/view, надо выделить в отдельную штуку-->
                     <div class="response-wrapper">
-                        <div class="stars-rating small"><span class="fill-star">&nbsp;</span><span class="fill-star">&nbsp;</span><span class="fill-star">&nbsp;</span><span class="fill-star">&nbsp;</span><span>&nbsp;</span></div>
-                        <p class="reviews">2 отзыва</p>
+                        <?= StarsWidget::widget(['rating' => $response->executor->rating, 'size' => 'small']); ?>
+                        <p class="reviews">
+                            <?= $response->executor->reviewsText; ?>
+                        </p>
                     </div>
 
                     <p class="response-message"><?= Html::encode($response->comment) ?></p>
@@ -117,7 +140,7 @@ $visibleResponses = $task->getVisibleResponses($userId);
             <ul class="enumeration-list">
                 <?php foreach ($task->taskFiles as $file): ?>
                     <li class="enumeration-item">
-                        <a href="<?= $file->file_path; ?>"
+                        <a href="<?= Html::encode($file->file_path); ?>"
                            class="link link--block link--clip"
                            download>
                             <?= Html::encode(basename($file->file_path)) ?>
@@ -125,8 +148,6 @@ $visibleResponses = $task->getVisibleResponses($userId);
                     </li>
                 <?php endforeach; ?>
             </ul>
-        <?php else: ?>
-            <p>Файлов нет =(</p>
         <?php endif; ?>
     </div>
 </div>

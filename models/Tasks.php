@@ -67,7 +67,8 @@ class Tasks extends ActiveRecord
             [['status'], 'default', 'value' => 'new'],
             [['created_at', 'due_date'], 'safe'],
             [['title', 'description', 'category_id', 'author_id'], 'required'],
-            [['description', 'location', 'status'], 'string'],
+            [['description', 'status'], 'string'],
+            ['location', 'safe'],
             [['category_id', 'city_id', 'budget', 'author_id', 'executor_id'], 'integer'],
             [['title', 'location_name'], 'string', 'max' => 255],
             ['status', 'in', 'range' => array_keys(self::optsStatus())],
@@ -308,5 +309,19 @@ class Tasks extends ActiveRecord
         }
 
         return array_filter($this->responses, fn ($r) => $r->executor_id === $userId);
+    }
+
+    public function getCoordinates(): ?array
+    {
+        if (!$this->location) {
+            return null;
+        }
+
+        $row = Yii::$app->db->createCommand(
+            "SELECT ST_X(location) AS lng, ST_Y(location) AS lat FROM tasks WHERE id = :id",
+            [':id' => $this->id]
+        )->queryOne();
+
+        return $row ? ['lat' => (float)$row['lat'], 'lng' => (float)$row['lng']] : null;
     }
 }
