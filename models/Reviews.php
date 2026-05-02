@@ -6,7 +6,7 @@ use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
- * This is the model class for table "reviews".
+ * Модель отзыва заказчика об исполнителе после завершения задания.
  *
  * @property int $id
  * @property string $created_at
@@ -17,22 +17,15 @@ use yii\db\ActiveRecord;
  * @property int $rating
  *
  * @property Users $author
- * @property Users $executor
  * @property Tasks $task
  */
 class Reviews extends ActiveRecord
 {
-    /**
-     * {@inheritdoc}
-     */
     public static function tableName(): string
     {
         return 'reviews';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function rules(): array
     {
         return [
@@ -45,47 +38,11 @@ class Reviews extends ActiveRecord
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels(): array
-    {
-        return [
-            'id' => 'ID',
-            'created_at' => 'Created At',
-            'task_id' => 'Task ID',
-            'author_id' => 'Author ID',
-            'executor_id' => 'Executor ID',
-            'comment' => 'Comment',
-            'rating' => 'Rating',
-        ];
-    }
-
-    /**
-     * Gets query for [[Author]].
-     *
-     * @return ActiveQuery
-     */
     public function getAuthor(): ActiveQuery
     {
         return $this->hasOne(Users::class, ['id' => 'author_id']);
     }
 
-    /**
-     * Gets query for [[Executor]].
-     *
-     * @return ActiveQuery
-     */
-    public function getExecutor(): ActiveQuery
-    {
-        return $this->hasOne(Users::class, ['id' => 'executor_id']);
-    }
-
-    /**
-     * Gets query for [[Task]].
-     *
-     * @return ActiveQuery
-     */
     public function getTask(): ActiveQuery
     {
         return $this->hasOne(Tasks::class, ['id' => 'task_id']);

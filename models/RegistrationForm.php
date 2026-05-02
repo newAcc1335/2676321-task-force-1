@@ -4,6 +4,9 @@ namespace app\models;
 
 use yii\base\Model;
 
+/**
+ * Форма регистрации нового пользователя.
+ */
 class RegistrationForm extends Model
 {
     public ?string $name = null;
@@ -32,6 +35,18 @@ class RegistrationForm extends Model
             ],
             ['password', 'string', 'min' => 6, 'tooShort' => 'Пароль должен содержать минимум 6 символов'],
             ['passwordRepeat', 'compare', 'compareAttribute' => 'password', 'message' => 'Пароли не совпадают'],
+        ];
+    }
+
+    public function attributeLabels(): array
+    {
+        return [
+            'name'           => 'Имя',
+            'email'          => 'Email',
+            'city_id'        => 'Город',
+            'password'       => 'Пароль',
+            'passwordRepeat' => 'Повтор пароля',
+            'is_executor'    => 'Я собираюсь откликаться на заказы',
         ];
     }
 }

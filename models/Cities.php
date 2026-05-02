@@ -2,34 +2,23 @@
 
 namespace app\models;
 
-use Yii;
+use yii\db\ActiveRecord;
 
 /**
- * This is the model class for table "cities".
+ * Модель города для локации задания
  *
  * @property int $id
  * @property string $name
  * @property string $location
- *
- * @property Tasks[] $tasks
- * @property Users[] $users
  */
-class Cities extends \yii\db\ActiveRecord
+class Cities extends ActiveRecord
 {
-
-
-    /**
-     * {@inheritdoc}
-     */
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'cities';
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['name', 'location'], 'required'],
@@ -38,37 +27,4 @@ class Cities extends \yii\db\ActiveRecord
             [['name'], 'unique'],
         ];
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels()
-    {
-        return [
-            'id' => 'ID',
-            'name' => 'Name',
-            'location' => 'Location',
-        ];
-    }
-
-    /**
-     * Gets query for [[Tasks]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getTasks()
-    {
-        return $this->hasMany(Tasks::class, ['city_id' => 'id']);
-    }
-
-    /**
-     * Gets query for [[Users]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUsers()
-    {
-        return $this->hasMany(Users::class, ['city_id' => 'id']);
-    }
-
 }

@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use DateMalformedStringException;
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\db\ActiveQuery;
@@ -9,7 +10,7 @@ use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 
 /**
- * This is the model class for table "users".
+ * Модель пользователя сайта.
  *
  * @property int $id
  * @property string $created_at
@@ -27,31 +28,19 @@ use yii\web\IdentityInterface;
  *
  * @property Categories[] $categories
  * @property Cities $city
- * @property Responses[] $responses
- * @property Reviews[] $reviews
  * @property Reviews[] $reviews0
- * @property Tasks[] $tasks
  * @property Tasks[] $tasks0
  */
 class Users extends ActiveRecord implements IdentityInterface
 {
-    /**
-     * ENUM field values
-     */
-    public const ROLE_AUTHOR = 'author';
-    public const ROLE_EXECUTOR = 'executor';
+    public const string ROLE_AUTHOR = 'author';
+    public const string ROLE_EXECUTOR = 'executor';
 
-    /**
-     * {@inheritdoc}
-     */
     public static function tableName(): string
     {
         return 'users';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function rules(): array
     {
         return [
@@ -72,69 +61,18 @@ class Users extends ActiveRecord implements IdentityInterface
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels(): array
-    {
-        return [
-            'id' => 'ID',
-            'created_at' => 'Created At',
-            'name' => 'Name',
-            'email' => 'Email',
-            'password_hash' => 'Password Hash',
-            'role' => 'Role',
-            'birthday' => 'Birthday',
-            'phone' => 'Phone',
-            'tg' => 'Tg',
-            'image_url' => 'Image Url',
-            'city_id' => 'City ID',
-            'is_customer_only' => 'Is Customer Only',
-        ];
-    }
-
-    /**
-     * Gets query for [[Categories]].
-     *
-     * @return ActiveQuery
-     */
     public function getCategories(): ActiveQuery
     {
         return $this->hasMany(Categories::class, ['id' => 'category_id'])->viaTable('user_categories', ['user_id' => 'id']);
     }
 
-    /**
-     * Gets query for [[City]].
-     *
-     * @return ActiveQuery
-     */
     public function getCity(): ActiveQuery
     {
         return $this->hasOne(Cities::class, ['id' => 'city_id']);
     }
 
     /**
-     * Gets query for [[Responses]].
-     *
-     * @return ActiveQuery
-     */
-    public function getResponses(): ActiveQuery
-    {
-        return $this->hasMany(Responses::class, ['executor_id' => 'id']);
-    }
-
-    /**
-     * Gets query for [[Reviews]].
-     *
-     * @return ActiveQuery
-     */
-    public function getReviews(): ActiveQuery
-    {
-        return $this->hasMany(Reviews::class, ['author_id' => 'id']);
-    }
-
-    /**
-     * Gets query for [[Reviews0]].
+     * Отзывы, оставленные как исполнителю.
      *
      * @return ActiveQuery
      */
@@ -144,30 +82,31 @@ class Users extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * Gets query for [[Tasks]].
+     * Задания, где пользователь является исполнителем
      *
      * @return ActiveQuery
      */
-    public function getTasks(): ActiveQuery
-    {
-        return $this->hasMany(Tasks::class, ['author_id' => 'id']);
-    }
-
-    /**
-     * Gets query for [[Tasks0]].
-     *
-     * @return ActiveQuery
-     */
-    public function getTasks0()
+    public function getTasks0(): ActiveQuery
     {
         return $this->hasMany(Tasks::class, ['executor_id' => 'id']);
     }
 
     /**
-     * column role ENUM value labels
+     * Отзывы об исполнителе с предзагруженными автором и заданием.
+     *
+     * Используется на странице профиля исполнителя.
+     */
+    public function getExecutorReviews(): ActiveQuery
+    {
+        return $this->hasMany(Reviews::class, ['executor_id' => 'id'])->with(['author', 'task']);
+    }
+
+    /**
+     * Возвращает возможные значения роли пользователя.
+     *
      * @return string[]
      */
-    public static function optsRole()
+    public static function optsRole(): array
     {
         return [
             self::ROLE_AUTHOR => 'author',
@@ -175,40 +114,22 @@ class Users extends ActiveRecord implements IdentityInterface
         ];
     }
 
-    /**
-     * @return string
-     */
-    public function displayRole()
-    {
-        return self::optsRole()[$this->role];
-    }
-
-    /**
-     * @return bool
-     */
-    public function isRoleAuthor()
+    public function isRoleAuthor(): bool
     {
         return $this->role === self::ROLE_AUTHOR;
     }
 
-    public function setRoleToAuthor()
-    {
-        $this->role = self::ROLE_AUTHOR;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isRoleExecutor()
+    public function isRoleExecutor(): bool
     {
         return $this->role === self::ROLE_EXECUTOR;
     }
 
-    public function setRoleToExecutor()
-    {
-        $this->role = self::ROLE_EXECUTOR;
-    }
-
+    /**
+     * Рейтинг исполнителя, считается по формуле:
+     *      Рейтинг = сумма оценок / (кол-во отзывов + кол-во проваленных заданий).
+     *
+     * @return float искомый рейтинг
+     */
     public function getRating(): float
     {
         $sum = $this->getReviews0()->sum('rating') ?? 0;
@@ -238,91 +159,11 @@ class Users extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * @throws InvalidConfigException
+     * Место в рейтинге среди всех исполнителей.
+     * Формула счета отличается от прошлой (не учитываем проваленные задания)
+     *
+     * @return int искомое место
      */
-    public function getCreatedAtFormatted(): string
-    {
-        return Yii::$app->formatter->asDate($this->created_at, 'php:d F, H:i');
-    }
-
-    public function getTgUsername(): ?string
-    {
-        return $this->tg ? ltrim($this->tg, '@') : null;
-    }
-
-    public function getTgUrl(): ?string
-    {
-        return $this->tg ? 'https://t.me/' . $this->tgUsername : null;
-    }
-
-    /**
-     * @param $id
-     * @return Users|null
-     */
-    public static function findIdentity($id): ?self
-    {
-        return self::findOne($id);
-    }
-
-    /**
-     * @param $token
-     * @param $type
-     * @return void
-     */
-    public static function findIdentityByAccessToken($token, $type = null)
-    {
-        // TODO: Implement findIdentityByAccessToken() method.
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getId(): mixed
-    {
-        return $this->getPrimaryKey();
-    }
-
-    /**
-     * @return void
-     */
-    public function getAuthKey()
-    {
-        // TODO: Implement getAuthKey() method.
-    }
-
-    /**
-     * @param $authKey
-     * @return void
-     */
-    public function validateAuthKey($authKey)
-    {
-        // TODO: Implement validateAuthKey() method.
-    }
-
-    public function validatePassword($password): bool
-    {
-        return Yii::$app->security->validatePassword($password, $this->password_hash);
-    }
-
-
-    public function getExecutorReviews(): ActiveQuery
-    {
-        return $this->hasMany(Reviews::class, ['executor_id' => 'id'])->with(['author', 'task']);
-    }
-
-    public function getAge(): ?int
-    {
-        if (!$this->birthday) {
-            return null;
-        }
-        return (int) new \DateTime($this->birthday)->diff(new \DateTime())->y;
-    }
-
-    public function getIsActiveExecutor(): bool
-    {
-        return Tasks::find()->where(['executor_id' => $this->id, 'status' => Tasks::STATUS_ACTIVE])->exists();
-    }
-
     public function getRank(): int
     {
         $avgRating = Reviews::find()->where(['executor_id' => $this->id])->average('rating') ?? 0;
@@ -338,18 +179,11 @@ class Users extends ActiveRecord implements IdentityInterface
         return (int)$rankPlace + 1;
     }
 
-    public function isContactVisible(int $viewerId): bool
-    {
-        if (!$this->is_customer_only) {
-            return true;
-        }
-
-        return Tasks::find()
-            ->where(['executor_id' => $this->id, 'author_id' => $viewerId])
-            ->exists();
-    }
-
-
+    /**
+     * Строка с количеством отзывов (учитывает склонение).
+     *
+     * @return string
+     */
     public function getReviewsText(): string
     {
         $countReviews = count($this->reviews0);
@@ -359,5 +193,93 @@ class Users extends ActiveRecord implements IdentityInterface
             '{n, plural, =0{нет отзывов} one{# отзыв} few{# отзыва} many{# отзывов} other{# отзывов}}',
             ['n' => $countReviews]
         );
+    }
+
+    public function getTgUsername(): ?string
+    {
+        return $this->tg ? ltrim($this->tg, '@') : null;
+    }
+
+    public function getTgUrl(): ?string
+    {
+        return $this->tg ? 'https://t.me/' . $this->tgUsername : null;
+    }
+
+    /**
+     * Возвращает возраст пользователя
+     *
+     * @throws DateMalformedStringException
+     */
+    public function getAge(): ?int
+    {
+        if (!$this->birthday) {
+            return null;
+        }
+        return new \DateTime($this->birthday)->diff(new \DateTime())->y;
+    }
+
+    /**
+     * Возвращает форматированную дату создания задания.
+     *
+     * @throws InvalidConfigException
+     */
+    public function getCreatedAtFormatted(): string
+    {
+        return Yii::$app->formatter->asDate($this->created_at, 'php:d F, H:i');
+    }
+
+    /**
+     * Проверяет, есть ли активное задание у исполнителя.
+     *
+     * @return bool
+     */
+    public function getIsActiveExecutor(): bool
+    {
+        return Tasks::find()->where(['executor_id' => $this->id, 'status' => Tasks::STATUS_ACTIVE])->exists();
+    }
+
+    /**
+     * Проверяет, можно ли показывать контакты исполнителя просматривающему пользователю.
+     *
+     * @param int $viewerId
+     * @return bool
+     */
+    public function isContactVisible(int $viewerId): bool
+    {
+        if (!$this->is_customer_only) {
+            return true;
+        }
+
+        return Tasks::find()->where(['executor_id' => $this->id, 'author_id' => $viewerId])->exists();
+    }
+
+    public function validatePassword(string $password): bool
+    {
+        return Yii::$app->security->validatePassword($password, $this->password_hash);
+    }
+
+    public static function findIdentity($id): ?self
+    {
+        return self::findOne($id);
+    }
+
+    public static function findIdentityByAccessToken($token, $type = null)
+    {
+        // TODO: Implement findIdentityByAccessToken() method.
+    }
+
+    public function getId(): mixed
+    {
+        return $this->getPrimaryKey();
+    }
+
+    public function getAuthKey()
+    {
+        // TODO: Implement getAuthKey() method.
+    }
+
+    public function validateAuthKey($authKey)
+    {
+        // TODO: Implement validateAuthKey() method.
     }
 }

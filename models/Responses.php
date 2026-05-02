@@ -8,7 +8,7 @@ use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
- * This is the model class for table "responses".
+ * Модель отклика исполнителя на задание.
  *
  * @property int $id
  * @property string $created_at
@@ -23,24 +23,15 @@ use yii\db\ActiveRecord;
  */
 class Responses extends ActiveRecord
 {
-    /**
-     * ENUM field values
-     */
-    public const STATUS_PENDING = 'pending';
-    public const STATUS_ACCEPTED = 'accepted';
-    public const STATUS_REJECTED = 'rejected';
+    public const string STATUS_PENDING = 'pending';
+    public const string STATUS_ACCEPTED = 'accepted';
+    public const string STATUS_REJECTED = 'rejected';
 
-    /**
-     * {@inheritdoc}
-     */
     public static function tableName(): string
     {
         return 'responses';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function rules(): array
     {
         return [
@@ -56,44 +47,19 @@ class Responses extends ActiveRecord
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels(): array
-    {
-        return [
-            'id' => 'ID',
-            'created_at' => 'Created At',
-            'task_id' => 'Task ID',
-            'executor_id' => 'Executor ID',
-            'price' => 'Price',
-            'comment' => 'Comment',
-            'status' => 'Status',
-        ];
-    }
-
-    /**
-     * Gets query for [[Executor]].
-     *
-     * @return ActiveQuery
-     */
     public function getExecutor(): ActiveQuery
     {
         return $this->hasOne(Users::class, ['id' => 'executor_id']);
     }
 
-    /**
-     * Gets query for [[Task]].
-     *
-     * @return ActiveQuery
-     */
     public function getTask(): ActiveQuery
     {
         return $this->hasOne(Tasks::class, ['id' => 'task_id']);
     }
 
     /**
-     * column status ENUM value labels
+     * Возвращает допустимые значения статуса.
+     *
      * @return string[]
      */
     public static function optsStatus(): array
@@ -105,33 +71,9 @@ class Responses extends ActiveRecord
         ];
     }
 
-    /**
-     * @return string
-     */
-    public function displayStatus(): string
-    {
-        return self::optsStatus()[$this->status];
-    }
-
-    /**
-     * @return bool
-     */
     public function isStatusPending(): bool
     {
         return $this->status === self::STATUS_PENDING;
-    }
-
-    public function setStatusToPending(): void
-    {
-        $this->status = self::STATUS_PENDING;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isStatusAccepted(): bool
-    {
-        return $this->status === self::STATUS_ACCEPTED;
     }
 
     public function setStatusToAccepted(): void
@@ -139,19 +81,17 @@ class Responses extends ActiveRecord
         $this->status = self::STATUS_ACCEPTED;
     }
 
-    /**
-     * @return bool
-     */
-    public function isStatusRejected(): bool
-    {
-        return $this->status === self::STATUS_REJECTED;
-    }
-
     public function setStatusToRejected(): void
     {
         $this->status = self::STATUS_REJECTED;
     }
 
+    /**
+     * Возвращает массив с доступными действиями над откликом для данного пользователя.
+     *
+     * @param int $userId
+     * @return array
+     */
     public function getAvailableActions(int $userId): array
     {
         $actions = [

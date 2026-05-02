@@ -11,9 +11,10 @@ use app\Actions\CancelAction;
 use app\Actions\CompleteAction;
 use app\Actions\FailAction;
 use app\Actions\Action;
+use yii\db\Exception;
 
 /**
- * This is the model class for table "tasks".
+ * Модель задания.
  *
  * @property int $id
  * @property string $created_at
@@ -29,36 +30,24 @@ use app\Actions\Action;
  * @property int $author_id
  * @property int|null $executor_id
  *
- * @property Users $author
  * @property Categories $category
  * @property Cities $city
- * @property Users $executor
  * @property Responses[] $responses
- * @property Reviews[] $reviews
  * @property TaskFiles[] $taskFiles
  */
 class Tasks extends ActiveRecord
 {
-    /**
-     * ENUM field values
-     */
     public const string STATUS_NEW = 'new';
     public const string STATUS_ACTIVE = 'active';
     public const string STATUS_CANCELLED = 'cancelled';
     public const string STATUS_COMPLETED = 'completed';
     public const string STATUS_FAILED = 'failed';
 
-    /**
-     * {@inheritdoc}
-     */
     public static function tableName(): string
     {
         return 'tasks';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function rules(): array
     {
         return [
@@ -78,100 +67,29 @@ class Tasks extends ActiveRecord
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels(): array
-    {
-        return [
-            'id' => 'ID',
-            'created_at' => 'Created At',
-            'title' => 'Title',
-            'description' => 'Description',
-            'category_id' => 'Category ID',
-            'city_id' => 'City ID',
-            'location_name' => 'Location Name',
-            'location' => 'Location',
-            'budget' => 'Budget',
-            'due_date' => 'Due Date',
-            'status' => 'Status',
-            'author_id' => 'Author ID',
-            'executor_id' => 'Executor ID',
-        ];
-    }
-
-    /**
-     * Gets query for [[Author]].
-     *
-     * @return ActiveQuery
-     */
-    public function getAuthor(): ActiveQuery
-    {
-        return $this->hasOne(Users::class, ['id' => 'author_id']);
-    }
-
-    /**
-     * Gets query for [[Category]].
-     *
-     * @return ActiveQuery
-     */
     public function getCategory(): ActiveQuery
     {
         return $this->hasOne(Categories::class, ['id' => 'category_id']);
     }
 
-    /**
-     * Gets query for [[City]].
-     *
-     * @return ActiveQuery
-     */
     public function getCity(): ActiveQuery
     {
         return $this->hasOne(Cities::class, ['id' => 'city_id']);
     }
 
-    /**
-     * Gets query for [[Executor]].
-     *
-     * @return ActiveQuery
-     */
-    public function getExecutor(): ActiveQuery
-    {
-        return $this->hasOne(Users::class, ['id' => 'executor_id']);
-    }
-
-    /**
-     * Gets query for [[Responses]].
-     *
-     * @return ActiveQuery
-     */
     public function getResponses(): ActiveQuery
     {
         return $this->hasMany(Responses::class, ['task_id' => 'id']);
     }
 
-    /**
-     * Gets query for [[Reviews]].
-     *
-     * @return ActiveQuery
-     */
-    public function getReviews(): ActiveQuery
-    {
-        return $this->hasMany(Reviews::class, ['task_id' => 'id']);
-    }
-
-    /**
-     * Gets query for [[TaskFiles]].
-     *
-     * @return ActiveQuery
-     */
     public function getTaskFiles(): ActiveQuery
     {
         return $this->hasMany(TaskFiles::class, ['task_id' => 'id']);
     }
 
     /**
-     * column status ENUM value labels
+     * Допустимые значения статуса задания.
+     *
      * @return string[]
      */
     public static function optsStatus(): array
@@ -185,30 +103,16 @@ class Tasks extends ActiveRecord
         ];
     }
 
-    /**
-     * @return string
-     */
     public function displayStatus(): string
     {
         return self::optsStatus()[$this->status];
     }
 
-    /**
-     * @return bool
-     */
     public function isStatusNew(): bool
     {
         return $this->status === self::STATUS_NEW;
     }
 
-    public function setStatusToNew(): void
-    {
-        $this->status = self::STATUS_NEW;
-    }
-
-    /**
-     * @return bool
-     */
     public function isStatusActive(): bool
     {
         return $this->status === self::STATUS_ACTIVE;
@@ -219,38 +123,14 @@ class Tasks extends ActiveRecord
         $this->status = self::STATUS_ACTIVE;
     }
 
-    /**
-     * @return bool
-     */
-    public function isStatusCancelled(): bool
-    {
-        return $this->status === self::STATUS_CANCELLED;
-    }
-
     public function setStatusToCancelled(): void
     {
         $this->status = self::STATUS_CANCELLED;
     }
 
-    /**
-     * @return bool
-     */
-    public function isStatusCompleted(): bool
-    {
-        return $this->status === self::STATUS_COMPLETED;
-    }
-
     public function setStatusToCompleted(): void
     {
         $this->status = self::STATUS_COMPLETED;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isStatusFailed(): bool
-    {
-        return $this->status === self::STATUS_FAILED;
     }
 
     public function setStatusToFailed(): void
@@ -271,6 +151,12 @@ class Tasks extends ActiveRecord
         return $this->due_date ? Yii::$app->formatter->asDatetime($this->due_date) : 'Не указан';
     }
 
+    /**
+     * Возвращает массив доступных действий над данным заданием для данного пользователя.
+     *
+     * @param int $userId
+     * @return Action[]
+     */
     public function getAllowedActions(int $userId): array
     {
         $actions = [
@@ -286,11 +172,22 @@ class Tasks extends ActiveRecord
         ));
     }
 
+    /**
+     * Проверяет, откликался ли данный пользователь на данное задание.
+     * @param int $userId
+     * @return bool
+     */
     public function hasResponseFrom(int $userId): bool
     {
         return array_any($this->responses, fn ($response) => $response->executor_id === $userId);
     }
 
+    /**
+     * Возвращает отклики, которые может видеть данный пользователь.
+     * (Заказчик видит все, исполнитель — только свой)
+     *
+     * @return Responses[]
+     */
     public function getVisibleResponses(int $userId): array
     {
         if ($this->author_id === $userId) {
@@ -300,6 +197,12 @@ class Tasks extends ActiveRecord
         return array_filter($this->responses, fn ($r) => $r->executor_id === $userId);
     }
 
+    /**
+     * Возвращает координаты из поля location БД.
+     *
+     * @return array{lat: float, lng: float}|null
+     * @throws Exception
+     */
     public function getCoordinates(): ?array
     {
         if (!$this->location) {
