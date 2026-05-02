@@ -134,9 +134,9 @@ $this->registerJsFile(
             <dd><?= Html::encode($task->displayStatus()) ?></dd>
         </dl>
     </div>
-    <div class="right-card white file-card">
-        <h4 class="head-card">Файлы задания</h4>
-        <?php if ($task->taskFiles): ?>
+    <?php if ($task->taskFiles): ?>
+        <div class="right-card white file-card">
+            <h4 class="head-card">Файлы задания</h4>
             <ul class="enumeration-list">
                 <?php foreach ($task->taskFiles as $file): ?>
                     <li class="enumeration-item">
@@ -148,8 +148,8 @@ $this->registerJsFile(
                     </li>
                 <?php endforeach; ?>
             </ul>
-        <?php endif; ?>
-    </div>
+        </div>
+    <?php endif; ?>
 </div>
 
 <?= $this->render('_response_modal', ['task' => $task, 'responseForm' => $responseForm]); ?>

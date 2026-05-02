@@ -2,10 +2,11 @@
 
 namespace app\models;
 
-use Yii;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 
 /**
- * This is the model class for table "reviews".
+ * Модель отзыва заказчика об исполнителе после завершения задания.
  *
  * @property int $id
  * @property string $created_at
@@ -16,23 +17,16 @@ use Yii;
  * @property int $rating
  *
  * @property Users $author
- * @property Users $executor
  * @property Tasks $task
  */
-class Reviews extends \yii\db\ActiveRecord
+class Reviews extends ActiveRecord
 {
-    /**
-     * {@inheritdoc}
-     */
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'reviews';
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['task_id', 'author_id', 'executor_id', 'comment', 'rating', 'created_at'], 'required'],
@@ -44,59 +38,13 @@ class Reviews extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels()
-    {
-        return [
-            'id' => 'ID',
-            'created_at' => 'Created At',
-            'task_id' => 'Task ID',
-            'author_id' => 'Author ID',
-            'executor_id' => 'Executor ID',
-            'comment' => 'Comment',
-            'rating' => 'Rating',
-        ];
-    }
-
-    /**
-     * Gets query for [[Author]].
-     *
-     * @return \yii\db\ActiveQuery|UsersQuery
-     */
-    public function getAuthor()
+    public function getAuthor(): ActiveQuery
     {
         return $this->hasOne(Users::class, ['id' => 'author_id']);
     }
 
-    /**
-     * Gets query for [[Executor]].
-     *
-     * @return \yii\db\ActiveQuery|UsersQuery
-     */
-    public function getExecutor()
-    {
-        return $this->hasOne(Users::class, ['id' => 'executor_id']);
-    }
-
-    /**
-     * Gets query for [[Task]].
-     *
-     * @return \yii\db\ActiveQuery|TasksQuery
-     */
-    public function getTask()
+    public function getTask(): ActiveQuery
     {
         return $this->hasOne(Tasks::class, ['id' => 'task_id']);
     }
-
-    /**
-     * {@inheritdoc}
-     * @return ReviewsQuery the active query used by this AR class.
-     */
-    public static function find()
-    {
-        return new ReviewsQuery(get_called_class());
-    }
-
 }

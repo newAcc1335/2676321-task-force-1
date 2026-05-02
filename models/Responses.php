@@ -2,12 +2,13 @@
 
 namespace app\models;
 
-use Yii;
 use app\Actions\Response\AcceptAction;
 use app\Actions\Response\RejectAction;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 
 /**
- * This is the model class for table "responses".
+ * Модель отклика исполнителя на задание.
  *
  * @property int $id
  * @property string $created_at
@@ -20,27 +21,18 @@ use app\Actions\Response\RejectAction;
  * @property Users $executor
  * @property Tasks $task
  */
-class Responses extends \yii\db\ActiveRecord
+class Responses extends ActiveRecord
 {
-    /**
-     * ENUM field values
-     */
-    public const STATUS_PENDING = 'pending';
-    public const STATUS_ACCEPTED = 'accepted';
-    public const STATUS_REJECTED = 'rejected';
+    public const string STATUS_PENDING = 'pending';
+    public const string STATUS_ACCEPTED = 'accepted';
+    public const string STATUS_REJECTED = 'rejected';
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'responses';
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['price', 'comment'], 'default', 'value' => null],
@@ -55,57 +47,22 @@ class Responses extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels()
-    {
-        return [
-            'id' => 'ID',
-            'created_at' => 'Created At',
-            'task_id' => 'Task ID',
-            'executor_id' => 'Executor ID',
-            'price' => 'Price',
-            'comment' => 'Comment',
-            'status' => 'Status',
-        ];
-    }
-
-    /**
-     * Gets query for [[Executor]].
-     *
-     * @return \yii\db\ActiveQuery|UsersQuery
-     */
-    public function getExecutor()
+    public function getExecutor(): ActiveQuery
     {
         return $this->hasOne(Users::class, ['id' => 'executor_id']);
     }
 
-    /**
-     * Gets query for [[Task]].
-     *
-     * @return \yii\db\ActiveQuery|TasksQuery
-     */
-    public function getTask()
+    public function getTask(): ActiveQuery
     {
         return $this->hasOne(Tasks::class, ['id' => 'task_id']);
     }
 
     /**
-     * {@inheritdoc}
-     * @return ResponsesQuery the active query used by this AR class.
-     */
-    public static function find()
-    {
-        return new ResponsesQuery(get_called_class());
-    }
-
-
-    /**
-     * column status ENUM value labels
+     * Возвращает допустимые значения статуса.
+     *
      * @return string[]
      */
-    public static function optsStatus()
+    public static function optsStatus(): array
     {
         return [
             self::STATUS_PENDING => 'pending',
@@ -114,53 +71,27 @@ class Responses extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * @return string
-     */
-    public function displayStatus()
-    {
-        return self::optsStatus()[$this->status];
-    }
-
-    /**
-     * @return bool
-     */
-    public function isStatusPending()
+    public function isStatusPending(): bool
     {
         return $this->status === self::STATUS_PENDING;
     }
 
-    public function setStatusToPending()
-    {
-        $this->status = self::STATUS_PENDING;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isStatusAccepted()
-    {
-        return $this->status === self::STATUS_ACCEPTED;
-    }
-
-    public function setStatusToAccepted()
+    public function setStatusToAccepted(): void
     {
         $this->status = self::STATUS_ACCEPTED;
     }
 
-    /**
-     * @return bool
-     */
-    public function isStatusRejected()
-    {
-        return $this->status === self::STATUS_REJECTED;
-    }
-
-    public function setStatusToRejected()
+    public function setStatusToRejected(): void
     {
         $this->status = self::STATUS_REJECTED;
     }
 
+    /**
+     * Возвращает массив с доступными действиями над откликом для данного пользователя.
+     *
+     * @param int $userId
+     * @return array
+     */
     public function getAvailableActions(int $userId): array
     {
         $actions = [
