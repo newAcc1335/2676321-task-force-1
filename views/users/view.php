@@ -25,29 +25,31 @@ $this->title = $user->name;
     </div>
 
     <div class="specialization-bio">
-        <div class="specialization">
-            <p class="head-info">Специализации</p>
-            <ul class="special-list">
-                <?php foreach ($user->categories as $category): ?>
-                    <li class="special-item">
-                        <a href="<?= Url::to([
-                                'tasks/index',
-                                'TasksForm' => [
-                                        'categories' => [$category->id]
-                                ]
-                        ]) ?>" class="link link--regular">
-                            <?= Html::encode($category->name) ?>
-                        </a>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-        </div>
+        <?php if (!empty($user->categories)): ?>
+            <div class="specialization">
+                <p class="head-info">Специализации</p>
+                <ul class="special-list">
+                    <?php foreach ($user->categories as $category): ?>
+                        <li class="special-item">
+                            <a href="<?= Url::to([
+                                    'tasks/index',
+                                    'TasksForm' => [
+                                            'categories' => [$category->id]
+                                    ]
+                            ]) ?>" class="link link--regular">
+                                <?= Html::encode($category->name); ?>
+                            </a>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        <?php endif; ?>
         <div class="bio">
             <p class="head-info">Био</p>
             <p class="bio-info">
                 <span class="country-info">Россия</span>,
-                <span class="town-info"><?= Html::encode($user->city->name ?? '') ?></span>,
-                <?php if ($user->birthday): ?>
+                <span class="town-info"><?= Html::encode($user->city->name ?? ''); ?></span>
+                <?php if ($user->birthday): ?>,
                     <span class="age-info"><?= $user->age; ?></span> лет
                 <?php endif; ?>
             </p>
@@ -65,9 +67,9 @@ $this->title = $user->name;
                 <div class="feedback-wrapper">
                     <p class="feedback">«<?= Html::encode($review->comment); ?>»</p>
                     <p class="task">
-                        Задание «<a href="<?= Url::to(['tasks/view', 'id' => $review->task_id]) ?>"
+                        Задание «<a href="<?= Url::to(['tasks/view', 'id' => $review->task_id]); ?>"
                                     class="link link--small">
-                            <?= Html::encode($review->task->title) ?>
+                            <?= Html::encode($review->task->title); ?>
                         </a>» выполнено
                     </p>
                 </div>
@@ -76,7 +78,7 @@ $this->title = $user->name;
                     <?= StarsWidget::widget(['rating' => $review->rating, 'size' => 'small']) ?>
                     <p class="info-text">
                         <span class="current-time">
-                            <?= Yii::$app->formatter->asRelativeTime($review->created_at) ?>
+                            <?= Yii::$app->formatter->asRelativeTime($review->created_at); ?>
                         </span>
                     </p>
                 </div>

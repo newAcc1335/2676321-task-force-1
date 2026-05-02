@@ -1,24 +1,24 @@
 <?php
 
-namespace app\Actions\Response;
+namespace app\src\Actions\Response;
 
 use app\models\Responses;
 
-class AcceptAction extends ResponseAction
+class RejectAction extends ResponseAction
 {
     public function getName(): string
     {
-        return 'Принять';
+        return 'Отказать';
     }
 
     public function getActionCode(): string
     {
-        return 'accept';
+        return 'reject';
     }
 
     public function getButtonClass(): string
     {
-        return 'button--blue';
+        return 'button--orange';
     }
 
     public function isAllowed(int $userId, Responses $response): bool

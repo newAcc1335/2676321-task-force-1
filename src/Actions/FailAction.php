@@ -1,25 +1,25 @@
 <?php
 
-namespace app\Actions;
+namespace app\src\Actions;
 
 use app\models\Tasks;
 use yii\helpers\Url;
 
-class CancelAction extends Action
+class FailAction extends Action
 {
     public function getName(): string
     {
-        return 'Отменить';
+        return 'Отказаться от задания';
     }
 
     public function getActionCode(): string
     {
-        return 'cancel';
+        return 'fail';
     }
 
     public function isAllowed(int $userId, Tasks $task): bool
     {
-        return $task->isStatusNew() && $task->author_id === $userId;
+        return $task->isStatusActive() && $task->executor_id === $userId;
     }
 
     public function getButtonClass(): string
@@ -29,15 +29,11 @@ class CancelAction extends Action
 
     public function getServiceMethod(): string
     {
-        return 'cancelTask';
+        return 'failTask';
     }
 
     public function getHref(int $taskId): string
     {
-        return Url::to([
-            'tasks/run-task-action',
-            'taskId' => $taskId,
-            'actionCode' => $this->getActionCode()
-        ]);
+        return '#';
     }
 }

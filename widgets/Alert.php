@@ -8,7 +8,7 @@ use yii\bootstrap5\Widget;
 
 class Alert extends Widget
 {
-    public $alertTypes = [
+    public array $alertTypes = [
         'error'   => 'alert-danger',
         'danger'  => 'alert-danger',
         'success' => 'alert-success',
@@ -16,9 +16,12 @@ class Alert extends Widget
         'warning' => 'alert-warning'
     ];
 
-    public $closeButton = [];
+    public array $closeButton = [];
 
-    public function run()
+    /**
+     * @throws \Throwable
+     */
+    public function run(): void
     {
         AlertAsset::register($this->view);
         $session = Yii::$app->session;

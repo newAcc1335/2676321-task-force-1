@@ -1,6 +1,6 @@
 <?php
 
-namespace app\Actions\Response;
+namespace app\src\Actions\Response;
 
 use app\models\Responses;
 

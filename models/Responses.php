@@ -2,10 +2,10 @@
 
 namespace app\models;
 
-use app\Actions\Response\AcceptAction;
-use app\Actions\Response\RejectAction;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use app\src\Actions\Response\AcceptAction;
+use app\src\Actions\Response\RejectAction;
 
 /**
  * Модель отклика исполнителя на задание.

@@ -27,6 +27,8 @@ class TasksController extends Controller
             'access' => [
                 'class' => AccessControl::class,
                 'only' => [
+                    'index',
+                    'view',
                     'add',
                     'respond-task',
                     'complete-task',
@@ -45,6 +47,8 @@ class TasksController extends Controller
                     ],
                     [
                         'actions' => [
+                            'index',
+                            'view',
                             'respond-task',
                             'complete-task',
                             'accept-response',
