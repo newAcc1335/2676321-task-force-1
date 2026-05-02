@@ -49,7 +49,7 @@ $this->registerCss("
             <?php endfor; ?>
         </div>
 
-        <?= Html::submitButton('Завершить', [
+        <?= Html::submitInput('Завершить', [
             'class' => 'button button--pop-up button--blue'
         ]) ?>
 

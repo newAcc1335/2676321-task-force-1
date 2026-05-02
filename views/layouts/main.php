@@ -18,8 +18,9 @@ $this->registerMetaTag(['name' => 'keywords', 'content' => $this->params['meta_k
 $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii::getAlias('@web/favicon.ico')]);
 
 $isRegistrationPage = Yii::$app->controller->route === 'registration/index';
-$avatarUrl = Yii::$app->user->identity->isRoleExecutor()
-        ? Url::to(['/users/view', 'id' => Yii::$app->user->id])
+$user = Yii::$app->user->identity;
+$avatarUrl = $user && $user->isRoleExecutor()
+        ? Url::to(['/users/view', 'id' => $user->id])
         : Url::to(['/edit-profile/index']);
 $route = Yii::$app->controller->route;
 ?>
@@ -48,7 +49,7 @@ $route = Yii::$app->controller->route;
                     <li class="list-item <?= str_starts_with($route, 'my-tasks') ? 'list-item--active' : ''; ?>">
                         <a href="<?= Url::to(['/my-tasks']); ?>" class="link link--nav" >Мои задания</a>
                     </li>
-                    <?php if (Yii::$app->user->identity->isRoleAuthor()): ?>
+                    <?php if ($user->isRoleAuthor()): ?>
                         <li class="list-item <?= str_starts_with($route, 'tasks/add') ? 'list-item--active' : ''; ?>">
                             <a href="<?= Url::to(['/tasks/add']); ?>" class="link link--nav" >Создать задание</a>
                         </li>
@@ -61,10 +62,10 @@ $route = Yii::$app->controller->route;
         </nav>
         <div class="user-block">
             <a href="<?= $avatarUrl; ?>">
-                <img class="user-photo" src="<?= Yii::$app->user->identity->image_url ?: '/img/man-glasses.png'; ?>" width="55" height="55" alt="Аватар">
+                <img class="user-photo" src="<?= $user->image_url ?: '/img/man-glasses.png'; ?>" width="55" height="55" alt="Аватар">
             </a>
             <div class="user-menu">
-                <p class="user-name"><?= Html::encode(Yii::$app->user->identity->name); ?></p>
+                <p class="user-name"><?= Html::encode($user->name); ?></p>
                 <div class="popup-head">
                     <ul class="popup-menu">
                         <li class="menu-item">

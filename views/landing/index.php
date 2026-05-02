@@ -120,7 +120,7 @@ use app\models\LoginForm;
             ->passwordInput(['class' => 'enter-form-email input input-middle'])
             ->label('Пароль'); ?>
 
-    <?= Html::submitButton('Войти', ['class' => 'button']); ?>
+    <?= Html::submitInput('Войти', ['class' => 'button']); ?>
     <?php ActiveForm::end(); ?>
     <button class="form-modal-close" type="button">Закрыть</button>
 </section>

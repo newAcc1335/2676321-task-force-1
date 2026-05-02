@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS tasks (
   category_id SMALLINT UNSIGNED NOT NULL,
   city_id INT UNSIGNED NULL,
   location_name VARCHAR(255) NULL,
-  location POINT NOT NULL,
+  location POINT NULL,
   budget INT UNSIGNED NULL,
   due_date DATE NULL,
   status ENUM('new', 'active', 'cancelled', 'completed', 'failed') NOT NULL DEFAULT 'new',
@@ -61,7 +61,6 @@ CREATE TABLE IF NOT EXISTS tasks (
   INDEX idx_city (city_id),
   INDEX idx_author (author_id),
   INDEX idx_executor (executor_id),
-  SPATIAL INDEX idx_location (location),
 
   FOREIGN KEY (author_id) REFERENCES users(id),
   FOREIGN KEY (executor_id) REFERENCES users(id),

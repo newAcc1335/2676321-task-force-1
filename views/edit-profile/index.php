@@ -66,14 +66,16 @@ $cityOptions = ArrayHelper::map($cities, 'id', 'name');
 
     <?= $activeForm->field($form, 'about')->textarea(); ?>
 
-    <?= $activeForm->field($form, 'categories', [
-        'template' => "{label}\n<div class=\"checkbox-profile\">{input}</div>\n{error}",
-    ])->checkboxList($categoryOptions, [
-        'tag' => false,
-        'itemOptions' => ['labelOptions' => ['class' => 'control-label']],
-    ])->label('Выбор специализаций'); ?>
+    <?php if ($user->isRoleExecutor()): ?>
+        <?= $activeForm->field($form, 'categories', [
+            'template' => "{label}\n<div class=\"checkbox-profile\">{input}</div>\n{error}",
+        ])->checkboxList($categoryOptions, [
+            'tag' => false,
+            'itemOptions' => ['labelOptions' => ['class' => 'control-label']],
+        ])->label('Выбор специализаций'); ?>
+    <?php endif; ?>
 
-    <?= Html::submitButton('Сохранить', ['class' => 'button button--blue']); ?>
+    <?= Html::submitInput('Сохранить', ['class' => 'button button--blue']); ?>
 
     <?php ActiveForm::end(); ?>
 </div>

@@ -36,7 +36,7 @@ $this->title = 'Настройки Безопасности';
         <?= $activeForm->field($form, 'is_customer_only')->checkbox() ?>
     <?php endif; ?>
 
-    <?= Html::submitButton('Сохранить', ['class' => 'button button--blue']) ?>
+    <?= Html::submitInput('Сохранить', ['class' => 'button button--blue']) ?>
 
     <?php ActiveForm::end(); ?>
 </div>

@@ -20,9 +20,9 @@ class EditProfileForm extends Model
     public ?string $phone = null;
     public ?string $tg = null;
     public ?string $about = null;
-    public ?int $city_id = null;
     public ?UploadedFile $avatar = null;
     public $categories = [];
+    public $city_id = null;
 
     public function rules(): array
     {

@@ -31,7 +31,7 @@ use yii\helpers\Html;
             ])->textInput()
                 ->label('Стоимость', ['class' => 'control-label']); ?>
 
-        <?= Html::submitButton('Отправить', [
+        <?= Html::submitInput('Отправить', [
             'class' => 'button button--pop-up button--blue'
         ]) ?>
 

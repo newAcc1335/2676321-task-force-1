@@ -32,6 +32,7 @@ class RegistrationController extends Controller
             $user->password_hash = Yii::$app->security->generatePasswordHash($registrationForm->password);
 
             if ($user->save()) {
+                Yii::$app->user->login($user);
                 Yii::$app->session->setFlash('success', 'Аккаунт зарегистрирован');
                 return $this->redirect(['/tasks/index']);
             }

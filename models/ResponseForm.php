@@ -10,7 +10,7 @@ use yii\base\Model;
 class ResponseForm extends Model
 {
     public ?string $comment = null;
-    public ?int $price = null;
+    public $price = null;
 
     public function rules(): array
     {

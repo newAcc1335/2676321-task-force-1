@@ -52,7 +52,7 @@ class EditProfileController extends Controller
                 $form->update($user);
                 Yii::$app->session->setFlash('success', 'Профиль обновлён');
 
-                return $this->redirect(['users/view', 'id' => $user->id]);
+                return $this->redirect(['/edit-profile']);
             }
         } else {
             $form->loadFromUser($user);
@@ -80,7 +80,7 @@ class EditProfileController extends Controller
             $form->update($user);
             Yii::$app->session->setFlash('success', 'Настройки сохранены');
 
-            return $this->redirect(['users/view', 'id' => $user->id]);
+            return $this->redirect(['/edit-profile/security']);
         }
 
         if (!Yii::$app->request->isPost) {

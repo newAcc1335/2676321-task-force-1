@@ -2,7 +2,7 @@
 
 use yii\db\Migration;
 
-class m000000_000000_init extends Migration
+class m000000_000000_init_db extends Migration
 {
     public function safeUp(): void
     {
@@ -13,12 +13,6 @@ class m000000_000000_init extends Migration
         $this->runSqlFile($base . '/seed/cities.sql');
 
         $this->addColumn('users', 'about', $this->text()->null());
-        $this->execute("ALTER TABLE tasks MODIFY location POINT NULL");
-
-        $filesPath = Yii::getAlias('@webroot/files/');
-        if (!is_dir($filesPath)) {
-            mkdir($filesPath, 0755, true);
-        }
     }
 
     public function safeDown(): void

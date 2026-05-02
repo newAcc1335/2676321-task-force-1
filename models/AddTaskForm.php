@@ -19,10 +19,10 @@ class AddTaskForm extends Model
 {
     public ?string $title = null;
     public ?string $description = null;
-    public ?int $category_id = null;
-    public ?int $budget = null;
     public ?string $due_date = null;
     public ?string $location_name = null;
+    public $category_id = null;
+    public $budget = null;
 
     /** @var UploadedFile[] прикрепленные файлф */
     public array $files = [];

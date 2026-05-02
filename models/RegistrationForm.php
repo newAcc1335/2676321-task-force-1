@@ -11,10 +11,10 @@ class RegistrationForm extends Model
 {
     public ?string $name = null;
     public ?string $email = null;
-    public ?int $city_id = null;
     public ?string $password = null;
     public ?string $passwordRepeat = null;
     public bool $is_executor = false;
+    public $city_id = null;
 
     public function rules(): array
     {
@@ -24,6 +24,7 @@ class RegistrationForm extends Model
                 'required',
                 'message' => 'Это поле необходимо заполнить',
             ],
+            ['is_executor', 'boolean'],
             ['email', 'email', 'message' => 'Некорректный формат email'],
             ['email', 'unique', 'targetClass' => Users::class, 'message' => 'Этот email уже зарегистрирован'],
             [

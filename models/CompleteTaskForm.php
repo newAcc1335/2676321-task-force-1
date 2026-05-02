@@ -10,7 +10,7 @@ use yii\base\Model;
 class CompleteTaskForm extends Model
 {
     public ?string $comment = null;
-    public ?int $rating = null;
+    public $rating = null;
 
     public function rules(): array
     {
