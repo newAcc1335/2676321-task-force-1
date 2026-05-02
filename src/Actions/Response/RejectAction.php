@@ -4,6 +4,11 @@ namespace app\src\Actions\Response;
 
 use app\models\Responses;
 
+/**
+ * Действие отклонение отклика.
+ *
+ * Доступно автору нового задания для откликов в статусе "pending".
+ */
 class RejectAction extends ResponseAction
 {
     public function getName(): string

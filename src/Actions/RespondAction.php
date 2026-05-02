@@ -5,6 +5,12 @@ namespace app\src\Actions;
 use app\models\Tasks;
 use app\models\Users;
 
+/**
+ * Действие отклика на задание.
+ *
+ * Доступно только исполнителю на новые задания, на которые он ещё не откликался.
+ * Открывает модальное окно для отправки отклика.
+ */
 class RespondAction extends Action
 {
     public function getName(): string

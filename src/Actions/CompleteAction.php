@@ -4,6 +4,12 @@ namespace app\src\Actions;
 
 use app\models\Tasks;
 
+/**
+ * Действие завершение задания.
+ *
+ * Доступно только автору задания, которое находится в статусе "Active".
+ * Открывает модальное окно для отзыва и оценки.
+ */
 class CompleteAction extends Action
 {
     public function getName(): string

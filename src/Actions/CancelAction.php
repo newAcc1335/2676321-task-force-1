@@ -5,6 +5,11 @@ namespace app\src\Actions;
 use app\models\Tasks;
 use yii\helpers\Url;
 
+/**
+ * Действие отмена задания.
+ *
+ * Доступно только автору задания, пока оно находится в статусе "New".
+ */
 class CancelAction extends Action
 {
     public function getName(): string

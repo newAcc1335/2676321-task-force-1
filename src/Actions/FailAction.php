@@ -3,8 +3,14 @@
 namespace app\src\Actions;
 
 use app\models\Tasks;
-use yii\helpers\Url;
 
+/**
+ * Действие отказа от задания.
+ *
+ * Доступно только исполнителю, который назначен на это задание.
+ * Переводит задание в статус «Провалено».
+ * Открывает модальное окно для подтверждения.
+ */
 class FailAction extends Action
 {
     public function getName(): string
