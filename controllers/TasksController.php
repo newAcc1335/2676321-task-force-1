@@ -135,6 +135,8 @@ class TasksController extends Controller
 
             if ($form->validate()) {
                 $task = $form->addTask(Yii::$app->user->id);
+                Yii::$app->session->setFlash('success', 'Задание добавлено');
+
                 return $this->redirect(['/tasks/view', 'id' => $task->id]);
             }
         }
@@ -199,7 +201,13 @@ class TasksController extends Controller
 
                 $method = $action->getServiceMethod();
 
-                Yii::$app->taskService->$method($taskId, Yii::$app->user->id);
+                try {
+                    Yii::$app->taskService->$method($taskId, Yii::$app->user->id);
+                    Yii::$app->session->setFlash('success', $action->getName() . ' — выполнено');
+                } catch (Throwable $e) {
+                    Yii::error($e, __METHOD__);
+                    Yii::$app->session->setFlash('danger', 'Не удалось выполнить действие');
+                }
 
                 return $this->redirect(['tasks/view', 'id' => $taskId]);
             }
