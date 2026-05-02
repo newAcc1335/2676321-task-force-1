@@ -2,7 +2,8 @@
 
 namespace app\models;
 
-use Yii;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "categories".
@@ -12,17 +13,14 @@ use Yii;
  * @property string $icon
  *
  * @property Tasks[] $tasks
- * @property UserCategories[] $userCategories
  * @property Users[] $users
  */
-class Categories extends \yii\db\ActiveRecord
+class Categories extends ActiveRecord
 {
-
-
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'categories';
     }
@@ -30,7 +28,7 @@ class Categories extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['name', 'icon'], 'required'],
@@ -43,7 +41,7 @@ class Categories extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',
@@ -55,29 +53,19 @@ class Categories extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Tasks]].
      *
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getTasks()
+    public function getTasks(): ActiveQuery
     {
         return $this->hasMany(Tasks::class, ['category_id' => 'id']);
     }
 
     /**
-     * Gets query for [[UserCategories]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUserCategories()
-    {
-        return $this->hasMany(UserCategories::class, ['category_id' => 'id']);
-    }
-
-    /**
      * Gets query for [[Users]].
      *
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getUsers()
+    public function getUsers(): ActiveQuery
     {
         return $this->hasMany(Users::class, ['id' => 'user_id'])->viaTable('user_categories', ['category_id' => 'id']);
     }

@@ -6,7 +6,6 @@ use Yii;
 use yii\base\InvalidConfigException;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
-use app\Actions\StartAction;
 use app\Actions\RespondAction;
 use app\Actions\CancelAction;
 use app\Actions\CompleteAction;
@@ -104,9 +103,9 @@ class Tasks extends ActiveRecord
     /**
      * Gets query for [[Author]].
      *
-     * @return ActiveQuery|UsersQuery
+     * @return ActiveQuery
      */
-    public function getAuthor(): ActiveQuery|UsersQuery
+    public function getAuthor(): ActiveQuery
     {
         return $this->hasOne(Users::class, ['id' => 'author_id']);
     }
@@ -114,9 +113,9 @@ class Tasks extends ActiveRecord
     /**
      * Gets query for [[Category]].
      *
-     * @return ActiveQuery|CategoriesQuery
+     * @return ActiveQuery
      */
-    public function getCategory(): ActiveQuery|CategoriesQuery
+    public function getCategory(): ActiveQuery
     {
         return $this->hasOne(Categories::class, ['id' => 'category_id']);
     }
@@ -124,9 +123,9 @@ class Tasks extends ActiveRecord
     /**
      * Gets query for [[City]].
      *
-     * @return ActiveQuery|CitiesQuery
+     * @return ActiveQuery
      */
-    public function getCity(): ActiveQuery|CitiesQuery
+    public function getCity(): ActiveQuery
     {
         return $this->hasOne(Cities::class, ['id' => 'city_id']);
     }
@@ -134,9 +133,9 @@ class Tasks extends ActiveRecord
     /**
      * Gets query for [[Executor]].
      *
-     * @return ActiveQuery|UsersQuery
+     * @return ActiveQuery
      */
-    public function getExecutor(): ActiveQuery|UsersQuery
+    public function getExecutor(): ActiveQuery
     {
         return $this->hasOne(Users::class, ['id' => 'executor_id']);
     }
@@ -144,9 +143,9 @@ class Tasks extends ActiveRecord
     /**
      * Gets query for [[Responses]].
      *
-     * @return ActiveQuery|ResponsesQuery
+     * @return ActiveQuery
      */
-    public function getResponses(): ActiveQuery|ResponsesQuery
+    public function getResponses(): ActiveQuery
     {
         return $this->hasMany(Responses::class, ['task_id' => 'id']);
     }
@@ -154,9 +153,9 @@ class Tasks extends ActiveRecord
     /**
      * Gets query for [[Reviews]].
      *
-     * @return ActiveQuery|ReviewsQuery
+     * @return ActiveQuery
      */
-    public function getReviews(): ActiveQuery|ReviewsQuery
+    public function getReviews(): ActiveQuery
     {
         return $this->hasMany(Reviews::class, ['task_id' => 'id']);
     }
@@ -164,22 +163,12 @@ class Tasks extends ActiveRecord
     /**
      * Gets query for [[TaskFiles]].
      *
-     * @return ActiveQuery|TaskFilesQuery
+     * @return ActiveQuery
      */
-    public function getTaskFiles(): ActiveQuery|TaskFilesQuery
+    public function getTaskFiles(): ActiveQuery
     {
         return $this->hasMany(TaskFiles::class, ['task_id' => 'id']);
     }
-
-    /**
-     * {@inheritdoc}
-     * @return TasksQuery the active query used by this AR class.
-     */
-    public static function find(): TasksQuery
-    {
-        return new TasksQuery(get_called_class());
-    }
-
 
     /**
      * column status ENUM value labels

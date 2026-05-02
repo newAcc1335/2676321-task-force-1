@@ -32,7 +32,6 @@ use yii\web\IdentityInterface;
  * @property Reviews[] $reviews0
  * @property Tasks[] $tasks
  * @property Tasks[] $tasks0
- * @property UserCategories[] $userCategories
  */
 class Users extends ActiveRecord implements IdentityInterface
 {
@@ -157,32 +156,12 @@ class Users extends ActiveRecord implements IdentityInterface
     /**
      * Gets query for [[Tasks0]].
      *
-     * @return ActiveQuery|TasksQuery
+     * @return ActiveQuery
      */
     public function getTasks0()
     {
         return $this->hasMany(Tasks::class, ['executor_id' => 'id']);
     }
-
-    /**
-     * Gets query for [[UserCategories]].
-     *
-     * @return ActiveQuery|UserCategoriesQuery
-     */
-    public function getUserCategories()
-    {
-        return $this->hasMany(UserCategories::class, ['user_id' => 'id']);
-    }
-
-    /**
-     * {@inheritdoc}
-     * @return UsersQuery the active query used by this AR class.
-     */
-    public static function find()
-    {
-        return new UsersQuery(get_called_class());
-    }
-
 
     /**
      * column role ENUM value labels
@@ -373,7 +352,7 @@ class Users extends ActiveRecord implements IdentityInterface
 
     public function getReviewsText(): string
     {
-        $countReviews = $this->getReviews0()->count();
+        $countReviews = count($this->reviews0);
 
         return Yii::t(
             'app',

@@ -2,9 +2,10 @@
 
 namespace app\models;
 
-use Yii;
 use app\Actions\Response\AcceptAction;
 use app\Actions\Response\RejectAction;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "responses".
@@ -20,7 +21,7 @@ use app\Actions\Response\RejectAction;
  * @property Users $executor
  * @property Tasks $task
  */
-class Responses extends \yii\db\ActiveRecord
+class Responses extends ActiveRecord
 {
     /**
      * ENUM field values
@@ -32,7 +33,7 @@ class Responses extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'responses';
     }
@@ -40,7 +41,7 @@ class Responses extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['price', 'comment'], 'default', 'value' => null],
@@ -58,7 +59,7 @@ class Responses extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',
@@ -74,9 +75,9 @@ class Responses extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Executor]].
      *
-     * @return \yii\db\ActiveQuery|UsersQuery
+     * @return ActiveQuery
      */
-    public function getExecutor()
+    public function getExecutor(): ActiveQuery
     {
         return $this->hasOne(Users::class, ['id' => 'executor_id']);
     }
@@ -84,28 +85,18 @@ class Responses extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Task]].
      *
-     * @return \yii\db\ActiveQuery|TasksQuery
+     * @return ActiveQuery
      */
-    public function getTask()
+    public function getTask(): ActiveQuery
     {
         return $this->hasOne(Tasks::class, ['id' => 'task_id']);
     }
 
     /**
-     * {@inheritdoc}
-     * @return ResponsesQuery the active query used by this AR class.
-     */
-    public static function find()
-    {
-        return new ResponsesQuery(get_called_class());
-    }
-
-
-    /**
      * column status ENUM value labels
      * @return string[]
      */
-    public static function optsStatus()
+    public static function optsStatus(): array
     {
         return [
             self::STATUS_PENDING => 'pending',
@@ -117,7 +108,7 @@ class Responses extends \yii\db\ActiveRecord
     /**
      * @return string
      */
-    public function displayStatus()
+    public function displayStatus(): string
     {
         return self::optsStatus()[$this->status];
     }
@@ -125,12 +116,12 @@ class Responses extends \yii\db\ActiveRecord
     /**
      * @return bool
      */
-    public function isStatusPending()
+    public function isStatusPending(): bool
     {
         return $this->status === self::STATUS_PENDING;
     }
 
-    public function setStatusToPending()
+    public function setStatusToPending(): void
     {
         $this->status = self::STATUS_PENDING;
     }
@@ -138,12 +129,12 @@ class Responses extends \yii\db\ActiveRecord
     /**
      * @return bool
      */
-    public function isStatusAccepted()
+    public function isStatusAccepted(): bool
     {
         return $this->status === self::STATUS_ACCEPTED;
     }
 
-    public function setStatusToAccepted()
+    public function setStatusToAccepted(): void
     {
         $this->status = self::STATUS_ACCEPTED;
     }
@@ -151,12 +142,12 @@ class Responses extends \yii\db\ActiveRecord
     /**
      * @return bool
      */
-    public function isStatusRejected()
+    public function isStatusRejected(): bool
     {
         return $this->status === self::STATUS_REJECTED;
     }
 
-    public function setStatusToRejected()
+    public function setStatusToRejected(): void
     {
         $this->status = self::STATUS_REJECTED;
     }

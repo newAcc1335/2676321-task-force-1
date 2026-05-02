@@ -2,23 +2,29 @@
 
 namespace app\models;
 
-use Yii;
 use yii\base\Model;
-use yii\db\Exception;
-use yii\db\Expression;
+use yii\web\UploadedFile;
+use Throwable;
 use RuntimeException;
-use app\src\Services\GeocoderService;
 use app\validators\MinLengthValidator;
+use app\src\Services\TaskService;
 
+/**
+ * Форма добавления нового задания.
+ *
+ * Выполняет валидацию входных данных, сохраняет задание и файлы к нему (использует TaskService::createTask())
+ *
+ */
 class AddTaskForm extends Model
 {
-    public $title;
-    public $description;
-    public $category_id;
-    public $budget;
-    public $due_date;
-    public $location_name;
+    public ?string $title = null;
+    public ?string $description = null;
+    public ?int $category_id = null;
+    public ?int $budget = null;
+    public ?string $due_date = null;
+    public ?string $location_name = null;
 
+    /** @var UploadedFile[] прикрепленные файлф */
     public array $files = [];
 
     public function rules(): array
@@ -48,55 +54,29 @@ class AddTaskForm extends Model
         ];
     }
 
+    public function attributeLabels(): array
+    {
+        return [
+            'title' => 'Название задания',
+            'description' => 'Описание задания',
+            'category_id' => 'Категория',
+            'budget' => 'Бюджет',
+            'due_date' => 'Срок исполнения',
+            'location_name' => 'Адрес',
+            'files' => 'Файлы',
+        ];
+    }
+
     /**
-     * @throws Exception
+     * Создаёт и сохраняет новое задание.
+     *
+     * @param int $authorId ID заказчика задания
+     * @return Tasks сохранённый объект задания
+     * @throws RuntimeException если не удалось сохранить
+     * @throws Throwable
      */
     public function addTask(int $authorId): Tasks
     {
-        $task = new Tasks();
-
-        $task->title = $this->title;
-        $task->description = $this->description;
-        $task->category_id = $this->category_id;
-        $task->location_name = $this->location_name;
-        $task->budget = $this->budget;
-        $task->due_date = $this->due_date;
-        $task->author_id = $authorId;
-        $task->status = Tasks::STATUS_NEW;
-        $task->created_at = date('Y-m-d H:i:s');
-
-        if (!empty($this->location_name)) {
-            $coordinates = new GeocoderService()->search($this->location_name);
-
-            if ($coordinates !== null) {
-                $task->location = new Expression(
-                    sprintf("ST_GeomFromText('POINT(%f %f)')", $coordinates['lng'], $coordinates['lat'])
-                );
-            }
-        }
-
-        if (!$task->save()) {
-            Yii::error($task->getErrors(), 'TASK_SAVE_ERROR');
-            throw new RuntimeException('Ошибка сохранения задачи');
-        }
-
-        foreach ($this->files as $file) {
-            $fileName = uniqid() . '_' . $file->baseName . '.' . $file->extension;
-            $fileDir = Yii::getAlias('@webroot/files/');
-
-            if (!is_dir($fileDir)) {
-                mkdir($fileDir, 0755, true);
-            }
-
-            $file->saveAs($fileDir . $fileName);
-
-            $taskFile = new TaskFiles();
-            $taskFile->task_id = $task->id;
-            $taskFile->file_path = '/files/' . $fileName;
-            $taskFile->created_at = date('Y-m-d H:i:s');
-            $taskFile->save();
-        }
-
-        return $task;
+        return new TaskService()->createTask($this, $authorId);
     }
 }
