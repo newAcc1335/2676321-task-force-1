@@ -7,7 +7,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 $this->params['mainClass'] = 'main-content main-content--left container';
-$this->title = 'Security Settings';
+$this->title = 'Настройки Безопасности';
 ?>
 
 <?= $this->render('_left_menu', ['activeTab' => 'security']) ?>

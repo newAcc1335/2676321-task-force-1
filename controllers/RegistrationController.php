@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Cities;
 use Yii;
 use yii\db\Exception;
 use yii\web\Controller;
@@ -9,6 +10,9 @@ use yii\web\Response;
 use app\models\Users;
 use app\models\RegistrationForm;
 
+/**
+ * Регистрация нового пользователя.
+ */
 class RegistrationController extends Controller
 {
     /**
@@ -32,8 +36,11 @@ class RegistrationController extends Controller
             }
         }
 
+        $cities = Cities::find()->select(['name', 'id'])->indexBy('id')->column();
+
         return $this->render('index', [
                 'registrationForm' => $registrationForm,
+                'cities' => $cities,
         ]);
     }
 }

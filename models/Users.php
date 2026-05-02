@@ -265,7 +265,6 @@ class Users extends ActiveRecord implements IdentityInterface
 
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        // TODO: Implement findIdentityByAccessToken() method.
     }
 
     public function getId(): mixed
@@ -275,11 +274,9 @@ class Users extends ActiveRecord implements IdentityInterface
 
     public function getAuthKey()
     {
-        // TODO: Implement getAuthKey() method.
     }
 
     public function validateAuthKey($authKey)
     {
-        // TODO: Implement validateAuthKey() method.
     }
 }

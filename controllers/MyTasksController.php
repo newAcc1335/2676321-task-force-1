@@ -40,11 +40,11 @@ class MyTasksController extends Controller
         $user = Yii::$app->user->identity;
 
         if ($user->isRoleAuthor()) {
-            $status = $status ?? 'new';
+            $status = $status ?? self::FILTER_NEW;
             $tasks = $this->getAuthorTasks($user->id, $status);
             $statusFilters = $this->getAuthorStatusFilters($status);
         } else {
-            $status = $status ?? 'active';
+            $status = $status ?? self::FILTER_ACTIVE;
             $tasks = $this->getExecutorTasks($user->id, $status);
             $statusFilters = $this->getExecutorStatusFilters($status);
         }

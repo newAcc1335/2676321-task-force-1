@@ -1,10 +1,10 @@
 <?php
 
 /** @var $registrationForm app\models\RegistrationForm */
+/** @var array $cities */
 
 use yii\widgets\ActiveForm;
 use yii\helpers\Html;
-use app\models\Cities;
 
 $this->params['mainClass'] = 'container container--registration';
 $this->title = 'Регистрация';
@@ -31,7 +31,7 @@ $this->title = 'Регистрация';
 
                 <?= $form->field($registrationForm, 'city_id')
                         ->dropDownList(
-                            Cities::find()->select(['name', 'id'])->indexBy('id')->column(),
+                            $cities,
                             ['prompt' => 'Выберите город', 'id' => 'town-user']
                         )
                         ->label('Город'); ?>

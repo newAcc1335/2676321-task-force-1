@@ -14,7 +14,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 $this->params['mainClass'] = 'main-content main-content--left container';
-$this->title = 'Profile Edit';
+$this->title = 'Настройки профиля';
 
 $categoryOptions = ArrayHelper::map($categories, 'id', 'name');
 $cityOptions = ArrayHelper::map($cities, 'id', 'name');

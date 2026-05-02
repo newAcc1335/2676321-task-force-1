@@ -19,6 +19,11 @@ use app\models\AddTaskForm;
 use app\models\Responses;
 use yii\web\UploadedFile;
 
+/**
+ * Управление заданиями.
+ *
+ * Содержит список заданий, страницу просмотра, добавление и управление откликами
+ */
 class TasksController extends Controller
 {
     public function behaviors(): array
@@ -100,9 +105,6 @@ class TasksController extends Controller
         return $this->render('index', ['provider' => $provider, 'form' => $form, 'categories' => $categories]);
     }
 
-    /**
-     * @throws NotFoundHttpException
-     */
     public function actionView(int $id): string
     {
         $task = Tasks::find()
@@ -123,9 +125,6 @@ class TasksController extends Controller
         );
     }
 
-    /**
-     * @throws
-     */
     public function actionAdd(): Response|string
     {
         $form = new AddTaskForm();

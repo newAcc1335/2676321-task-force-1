@@ -7,13 +7,14 @@
  */
 
 use yii\data\ActiveDataProvider;
+use yii\helpers\Html;
 use yii\helpers\Url;
 use app\models\TasksForm;
 use app\models\Categories;
 use yii\widgets\LinkPager;
 
 $this->params['mainClass'] = 'main-content container';
-$this->title = 'Tasks';
+$this->title = 'Задания';
 ?>
 
 <div class="left-column">
@@ -22,23 +23,23 @@ $this->title = 'Tasks';
         <div class="task-card">
             <div class="header-task">
                 <a  href="<?= Url::to(['tasks/view', 'id' => $task->id]) ?>" class="link link--block link--big">
-                    <?= htmlspecialchars($task->title); ?>
+                    <?= Html::encode($task->title); ?>
                 </a>
                 <p class="price price--task">
                     <?= !empty($task->budget)
-                            ? htmlspecialchars($task->budget) . ' ₽'
+                            ? Html::encode($task->budget) . ' ₽'
                             : 'Договоримся =)'; ?>
                 </p>
             </div>
             <p class="info-text">
                 <span class="current-time"><?= $task->createdAtFormatted; ?></span>
             </p>
-            <p class="task-text"><?= htmlspecialchars($task->description); ?></p>
+            <p class="task-text"><?= Html::encode($task->description); ?></p>
             <div class="footer-task">
                 <p class="info-text town-text">
-                    <?= htmlspecialchars($task->location_name ?? 'Адрес не указан'); ?>
+                    <?= Html::encode($task->location_name ?? 'Адрес не указан'); ?>
                 </p>
-                <p class="info-text category-text"><?= htmlspecialchars($task->category->name); ?></p>
+                <p class="info-text category-text"><?= Html::encode($task->category->name); ?></p>
                 <a href="<?= Url::to(['tasks/view', 'id' => $task->id]) ?>" class="button button--black">
                     Смотреть Задание
                 </a>
@@ -76,7 +77,7 @@ $this->title = 'Tasks';
                                        value="<?= $category->id; ?>"
                                         <?= in_array($category->id, $form->categories) ? 'checked' : ''; ?>
                                 >
-                                <?= htmlspecialchars($category->name); ?>
+                                <?= Html::encode($category->name); ?>
                             </label>
                         </div>
                     </div>
@@ -102,7 +103,7 @@ $this->title = 'Tasks';
                     <select id="period-value" name="TasksForm[period]">
                         <?php foreach (TasksForm::PERIOD_OPTIONS as $value => $label): ?>
                             <option value="<?= $value; ?>" <?= (string)$form->period === (string)$value ? 'selected' : ''; ?>>
-                                <?= $label; ?>
+                                <?= Html::encode($label); ?>
                             </option>
                         <?php endforeach; ?>
                     </select>

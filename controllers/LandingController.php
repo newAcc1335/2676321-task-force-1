@@ -9,6 +9,9 @@ use yii\web\Response;
 use yii\widgets\ActiveForm;
 use app\models\LoginForm;
 
+/**
+ * Лендинг с формой входа на сайт.
+ */
 class LandingController extends Controller
 {
     public $layout = 'landing';

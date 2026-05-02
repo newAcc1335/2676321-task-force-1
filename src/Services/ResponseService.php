@@ -9,8 +9,23 @@ use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 use app\models\Responses;
 
+/**
+ * Сервис управления откликами.
+ *
+ * Содержит бизнес-логику принятия и отклонения откликов.
+ */
 class ResponseService
 {
+    /**
+     * Принимает отклик (назначает исполнителя и меняет статус).
+     *
+     * @param int $responseId ID отклика
+     * @param int $userId ID заказчика
+     * @throws NotFoundHttpException если отклик не найден
+     * @throws ForbiddenHttpException если нет прав на действие
+     * @throws RuntimeException если не удалось сохранить
+     * @throws Throwable любое другое исключение
+     */
     public function accept(int $responseId, int $userId): void
     {
         $response = $this->findAccessibleResponse($responseId, $userId);
@@ -40,6 +55,16 @@ class ResponseService
         }
     }
 
+    /**
+     * Отклоняет отклик.
+     *
+     * @param int $responseId ID отклика
+     * @param int $userId ID заказчика
+     * @throws NotFoundHttpException если отклик не найден
+     * @throws ForbiddenHttpException если нет прав на действие
+     * @throws RuntimeException если не удалось сохранить
+     * @throws Throwable любое другое исключение
+     */
     public function reject(int $responseId, int $userId): void
     {
         $response = $this->findAccessibleResponse($responseId, $userId);
@@ -61,8 +86,10 @@ class ResponseService
     }
 
     /**
-     * @throws ForbiddenHttpException
-     * @throws NotFoundHttpException
+     * Находит отклик и проверяет, что у текущий пользователя достаточно прав (является автором задания).
+     *
+     * @throws ForbiddenHttpException если отклик не найден
+     * @throws NotFoundHttpException если пользователь не является автором задания
      */
     private function findAccessibleResponse(int $responseId, int $userId): Responses
     {

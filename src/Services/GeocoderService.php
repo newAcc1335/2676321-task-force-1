@@ -6,10 +6,19 @@ use Yii;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 
+/**
+ * Сервис геокодирования для Yandex Geocoder API.
+ */
 class GeocoderService
 {
     private const string API_URL = 'https://geocode-maps.yandex.ru/1.x/';
 
+    /**
+     * Возвращает географические координаты по адресу.
+     *
+     * @param string $location адрес для геокодирования
+     * @return array|null координаты или null если не найдено
+     */
     public function search(string $location): ?array
     {
         $client = new Client(['timeout' => 5]);

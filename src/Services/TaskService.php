@@ -77,42 +77,6 @@ class TaskService
     }
 
     /**
-     * Сохраняет файлы на диск и в БД.
-     *
-     * @param int $taskId ID задания
-     * @param array $files массив файлов
-     * @throws RuntimeException если файл не удалось сохранить в БД
-     * @throws Exception
-     */
-    private function saveFiles(int $taskId, array $files): void
-    {
-        if (empty($files)) {
-            return;
-        }
-
-        $fileDir = Yii::getAlias('@webroot') . self::FILES_PATH;
-
-        if (!is_dir($fileDir)) {
-            mkdir($fileDir, 0755, true);
-        }
-
-        foreach ($files as $file) {
-            $fileName = uniqid() . '_' . $file->baseName . '.' . $file->extension;
-            $file->saveAs($fileDir . $fileName);
-
-            $taskFile = new TaskFiles();
-            $taskFile->task_id = $taskId;
-            $taskFile->file_path = self::FILES_PATH . $fileName;
-            $taskFile->created_at = date('Y-m-d H:i:s');
-
-            if (!$taskFile->save()) {
-                Yii::error($taskFile->getErrors(), 'TASK_FILE_SAVE_ERROR');
-                throw new RuntimeException('Ошибка сохранения файла ' . $fileName);
-            }
-        }
-    }
-
-    /**
      * Добавляет отклик исполнителя на задание.
      *
      * @param int $taskId ID задания
@@ -267,6 +231,42 @@ class TaskService
 
         if (!$task->save()) {
             throw new RuntimeException('Ошибка отмены задачи');
+        }
+    }
+
+    /**
+     * Сохраняет файлы на диск и в БД.
+     *
+     * @param int $taskId ID задания
+     * @param array $files массив файлов
+     * @throws RuntimeException если файл не удалось сохранить в БД
+     * @throws Exception
+     */
+    private function saveFiles(int $taskId, array $files): void
+    {
+        if (empty($files)) {
+            return;
+        }
+
+        $fileDir = Yii::getAlias('@webroot') . self::FILES_PATH;
+
+        if (!is_dir($fileDir)) {
+            mkdir($fileDir, 0755, true);
+        }
+
+        foreach ($files as $file) {
+            $fileName = uniqid() . '_' . $file->baseName . '.' . $file->extension;
+            $file->saveAs($fileDir . $fileName);
+
+            $taskFile = new TaskFiles();
+            $taskFile->task_id = $taskId;
+            $taskFile->file_path = self::FILES_PATH . $fileName;
+            $taskFile->created_at = date('Y-m-d H:i:s');
+
+            if (!$taskFile->save()) {
+                Yii::error($taskFile->getErrors(), 'TASK_FILE_SAVE_ERROR');
+                throw new RuntimeException('Ошибка сохранения файла ' . $fileName);
+            }
         }
     }
 }

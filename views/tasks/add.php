@@ -8,7 +8,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 $this->params['mainClass'] = 'main-content main-content--center container';
-$this->title = 'Add Task';
+$this->title = 'Создание Задания';
 ?>
 
 <div class="add-task-form regular-form">

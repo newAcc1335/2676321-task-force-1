@@ -1,7 +1,6 @@
 <?php
 
 /** @var Tasks[] $tasks */
-/** @var string $status */
 /** @var bool $isAuthor */
 /** @var array $statusFilters */
 /** @var string $sectionTitle */
@@ -11,7 +10,7 @@ use yii\helpers\Url;
 use app\models\Tasks;
 
 $this->params['mainClass'] = 'main-content container';
-$this->title = 'My Tasks';
+$this->title = 'Мои Задания';
 ?>
 
 <div class="left-menu">

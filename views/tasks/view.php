@@ -13,7 +13,7 @@ use app\models\Tasks;
 use yii\web\View;
 
 $this->params['mainClass'] = 'main-content container';
-$this->title = 'Task №' . $task->id;
+$this->title = 'Задание №' . $task->id;
 
 $userId = Yii::$app->user->id;
 $taskActions = $task->getAllowedActions($userId);

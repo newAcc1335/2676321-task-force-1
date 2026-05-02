@@ -6,11 +6,11 @@ use app\models\Users;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
+/**
+ * Профиль пользователя, который является исполнителем.
+ */
 class UsersController extends Controller
 {
-    /**
-     * @throws NotFoundHttpException
-     */
     public function actionView(int $id): string
     {
         $user = Users::findOne($id);
