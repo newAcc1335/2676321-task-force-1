@@ -94,7 +94,7 @@ $this->registerJsFile(
                 <div class="feedback-wrapper">
                     <p class="info-text">
                         <span class="current-time">
-                            <?= Yii::$app->formatter->asRelativeTime($response->created_at); ?>
+                            <?= Yii::$app->formatter->asRelativeTime(strtotime($response->created_at)); ?>
                         </span>
                     </p>
 
