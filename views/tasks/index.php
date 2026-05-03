@@ -7,10 +7,12 @@
  */
 
 use yii\data\ActiveDataProvider;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use app\models\TasksForm;
 use app\models\Categories;
+use yii\widgets\ActiveForm;
 use yii\widgets\LinkPager;
 
 $this->params['mainClass'] = 'main-content container';
@@ -28,7 +30,7 @@ $this->title = 'Задания';
                 <p class="price price--task">
                     <?= !empty($task->budget)
                             ? Html::encode($task->budget) . ' ₽'
-                            : 'Договоримся =)'; ?>
+                            : 'Договорная'; ?>
                 </p>
             </div>
             <p class="info-text">
@@ -66,51 +68,45 @@ $this->title = 'Задания';
 <div class="right-column">
    <div class="right-card black">
        <div class="search-form">
-            <form method="get">
-                <h4 class="head-card"><?= $form->getAttributeLabel('categories'); ?></h4>
-                <?php foreach ($categories as $category): ?>
-                    <div class="form-group">
-                        <div class="checkbox-wrapper">
-                            <label class="control-label" for="<?= $category->id; ?>">
-                                <input type="checkbox"
-                                       id="<?= $category->id; ?>"
-                                       name="TasksForm[categories][]"
-                                       value="<?= $category->id; ?>"
-                                        <?= in_array($category->id, $form->categories) ? 'checked' : ''; ?>
-                                >
-                                <?= Html::encode($category->name); ?>
-                            </label>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
+           <?php $activeForm = ActiveForm::begin([
+                   'method' => 'get',
+                   'options' => ['id' => 'filter-form'],
+                   'action' => ['/tasks/index'],
+           ]); ?>
+           <h4 class="head-card"><?= $form->getAttributeLabel('categories'); ?></h4>
+           <?= $activeForm->field($form, 'categories', [
+                   'template' => '{input}',
+               ])->checkboxList(
+                   ArrayHelper::map($categories, 'id', 'name'),
+                   [
+                       'item' => function ($index, $label, $name, $checked, $value) {
+                           return '<div class="form-group"><div class="checkbox-wrapper">'
+                               . '<label class="control-label">'
+                               . Html::checkbox($name, $checked, ['value' => $value, 'id' => 'category-' . $value])
+                               . Html::encode($label)
+                               . '</label></div></div>';
+                       },
+                   ]
+               ); ?>
 
-                <h4 class="head-card">Дополнительно</h4>
-                <div class="form-group">
-                    <label class="control-label" for="without-responses">
-                        <input type="hidden" name="TasksForm[isWithoutResponses]" value="0">
-                        <input
-                                id="without-responses"
-                                type="checkbox"
-                                name="TasksForm[isWithoutResponses]"
-                                value="1"
-                                <?= $form->isWithoutResponses ? 'checked' : ''; ?>
-                        >
-                        <?= $form->getAttributeLabel('isWithoutResponses'); ?>
-                    </label>
-                </div>
-                <h4 class="head-card"><?= $form->getAttributeLabel('period'); ?></h4>
-                <div class="form-group">
-                    <label for="period-value"></label>
-                    <select id="period-value" name="TasksForm[period]">
-                        <?php foreach (TasksForm::PERIOD_OPTIONS as $value => $label): ?>
-                            <option value="<?= $value; ?>" <?= (string)$form->period === (string)$value ? 'selected' : ''; ?>>
-                                <?= Html::encode($label); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <input type="submit" class="button button--blue" value="Искать">
-            </form>
+           <h4 class="head-card">Дополнительно</h4>
+
+           <?php foreach (['isRemote', 'isWithoutResponses'] as $attr): ?>
+               <?= $activeForm->field($form, $attr, [
+                       'template' => '<div class="form-group"><label class="control-label">{input} {label}</label></div>',
+                       'options' => ['tag' => false],
+               ])->checkbox(['uncheck' => '0'], false) ?>
+           <?php endforeach; ?>
+
+           <h4 class="head-card"><?= $form->getAttributeLabel('period'); ?></h4>
+
+           <?= $activeForm->field($form, 'period', [
+                   'template' => '<div class="form-group">{input}</div>',
+                   'options' => ['tag' => false],
+           ])->dropDownList(TasksForm::PERIOD_OPTIONS) ?>
+
+           <?= Html::submitInput('Искать', ['class' => 'button button--blue']) ?>
+           <?php ActiveForm::end(); ?>
        </div>
    </div>
 </div>

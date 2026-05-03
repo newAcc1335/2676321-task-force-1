@@ -15,13 +15,15 @@ class TasksForm extends Model
         '12' => '12 часов',
         '24' => '24 часа',
     ];
-    public array $categories = [];
+    public $categories = [];
     public bool $isWithoutResponses = false;
+    public bool $isRemote = false;
     public string $period = '';
 
     public function rules(): array
     {
         return [
+            ['categories', 'filter', 'filter' => fn ($v) => is_array($v) ? $v : []],
             ['categories', 'each',
              'rule' => [
                  'exist',
@@ -30,6 +32,7 @@ class TasksForm extends Model
              ]
             ],
             ['isWithoutResponses', 'boolean'],
+            ['isRemote', 'boolean'],
             ['period', 'in', 'range' => array_keys(self::PERIOD_OPTIONS)],
         ];
     }
@@ -40,6 +43,7 @@ class TasksForm extends Model
                 'categories' => 'Категории',
                 'isWithoutResponses' => 'Без откликов',
                 'period' => 'Период',
+                'isRemote' => 'Удалённая работа',
         ];
     }
 }

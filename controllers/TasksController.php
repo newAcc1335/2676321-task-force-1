@@ -88,6 +88,10 @@ class TasksController extends Controller
                 $tasks->andWhere(['not in', 'id', Responses::find()->select('task_id')->distinct()]);
             }
 
+            if ($form->isRemote) {
+                $tasks->andWhere(['city_id' => null]);
+            }
+
             if ($form->period !== '') {
                 $hours = (int)$form->period;
 
