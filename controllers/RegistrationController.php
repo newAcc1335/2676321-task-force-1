@@ -21,6 +21,10 @@ class RegistrationController extends Controller
      */
     public function actionIndex(): Response|string
     {
+        if (!Yii::$app->user->isGuest) {
+            return $this->redirect(['/tasks/index']);
+        }
+
         $registrationForm = new RegistrationForm();
 
         if ($registrationForm->load(Yii::$app->request->post()) && $registrationForm->validate()) {
