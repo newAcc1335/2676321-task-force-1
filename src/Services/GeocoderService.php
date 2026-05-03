@@ -14,7 +14,7 @@ class GeocoderService
     private const string API_URL = 'https://geocode-maps.yandex.ru/1.x/';
 
     /**
-     * Возвращает географические координаты по адресу.
+     * Возвращает географические координаты и город по адресу.
      *
      * @param string $location адрес для геокодирования
      * @return array|null координаты или null если не найдено
@@ -39,6 +39,7 @@ class GeocoderService
         }
 
         $data = json_decode($response->getBody()->getContents(), true);
+
         if (!is_array($data)) {
             return null;
         }
@@ -48,13 +49,31 @@ class GeocoderService
             return null;
         }
 
-        $point = $features[0]['GeoObject']['Point']['pos'] ?? null;
+        $geoObject = $features[0]['GeoObject'];
+
+        $point = $geoObject['Point']['pos'] ?? null;
         if (!$point) {
             return null;
         }
 
         [$lng, $lat] = explode(' ', $point);
 
-        return ['lat' => (float) $lat, 'lng' => (float) $lng];
+        return ['lat' => (float) $lat, 'lng' => (float) $lng, 'city' => $this->extractCity($geoObject)];
+    }
+
+    /**
+     * Извлекает название города из ответа геокодера.
+     */
+    private function extractCity(array $geoObject): ?string
+    {
+        $components = $geoObject['metaDataProperty']['GeocoderMetaData']['Address']['Components'] ?? [];
+
+        foreach ($components as $component) {
+            if (($component['kind'] ?? null) === 'locality') {
+                return $component['name'] ?? null;
+            }
+        }
+
+        return null;
     }
 }

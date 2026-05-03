@@ -72,7 +72,12 @@ class TasksController extends Controller
     {
         $form = new TasksForm();
         $categories = Categories::find()->all();
-        $tasks = Tasks::find()->where(['status' => Tasks::STATUS_NEW])->with('category');
+        $tasks = Tasks::find()->where(['status' => Tasks::STATUS_NEW])->with(['category', 'city'])->orderBy(
+            ['created_at' => SORT_DESC]
+        );
+
+        $cityId = Yii::$app->user->identity->city_id;
+        $tasks->andWhere(['or', ['city_id' => $cityId], ['city_id' => null]]);
 
         if ($form->load(Yii::$app->request->get())) {
             if (!empty($form->categories)) {

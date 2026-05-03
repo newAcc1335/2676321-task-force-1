@@ -33,7 +33,7 @@ $this->title = 'Мои Задания';
     </h3>
 
     <?php if (empty($tasks)): ?>
-        <p class="info-text">Заданий нет.</p>
+        <p class="info-text">Заданий нет</p>
     <?php else: ?>
         <?php foreach ($tasks as $task): ?>
             <div class="task-card">
@@ -45,7 +45,7 @@ $this->title = 'Мои Задания';
                     <?php if ($task->budget): ?>
                         <p class="price price--task"><?= Html::encode($task->budget); ?> ₽</p>
                     <?php else: ?>
-                        <p class="price price--task">Договоримся =)</p>
+                        <p class="price price--task">Договорная</p>
                     <?php endif; ?>
                 </div>
 
@@ -57,7 +57,7 @@ $this->title = 'Мои Задания';
 
                 <div class="footer-task">
                     <p class="info-text town-text">
-                        <?= Html::encode($task->location_name ?? 'Адрес не указан'); ?>
+                        <?= Html::encode($task->city?->name ?? 'Адрес не указан'); ?>
                     </p>
                     <p class="info-text category-text">
                         <?= Html::encode($task->category->name ?? ''); ?>

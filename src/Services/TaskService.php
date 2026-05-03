@@ -14,6 +14,7 @@ use app\models\Reviews;
 use app\models\Tasks;
 use app\models\AddTaskForm;
 use app\models\TaskFiles;
+use app\models\Cities;
 
 /**
  * Сервис управления заданиями.
@@ -54,6 +55,14 @@ class TaskService
                 $task->location = new Expression(
                     sprintf("ST_GeomFromText('POINT(%f %f)')", $coordinates['lng'], $coordinates['lat'])
                 );
+
+                if (!empty($coordinates['city'])) {
+                    $city = Cities::findOne(['name' => $coordinates['city']]);
+
+                    if ($city) {
+                        $task->city_id = $city->id;
+                    }
+                }
             }
         }
 

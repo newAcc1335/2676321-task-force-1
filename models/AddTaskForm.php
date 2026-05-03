@@ -50,6 +50,13 @@ class AddTaskForm extends Model
             ['title', MinLengthValidator::class, 'min' => 10],
             ['description', MinLengthValidator::class, 'min' => 30],
             ['due_date', 'date', 'format' => 'php:Y-m-d', 'message' => 'Указана некорректная дата'],
+            [
+                'due_date',
+                'compare',
+                'compareValue' => date('Y-m-d'),
+                'operator' => '>=',
+                'message' => 'Дата не может быть раньше сегодня'
+            ],
             ['files', 'file', 'skipOnEmpty' => true, 'maxFiles' => 13],
         ];
     }

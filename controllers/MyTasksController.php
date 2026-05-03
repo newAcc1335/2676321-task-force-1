@@ -64,7 +64,9 @@ class MyTasksController extends Controller
      */
     private function getAuthorTasks(int $userId, string $status): array
     {
-        $authorTasks = Tasks::find()->with('category')->where(['author_id' => $userId]);
+        $authorTasks = Tasks::find()->with(['category', 'city'])->where(['author_id' => $userId])->orderBy(
+            ['created_at' => SORT_DESC]
+        );
 
         return match ($status) {
             self::FILTER_NEW => $authorTasks->andWhere(['status' => Tasks::STATUS_NEW])->all(),
@@ -102,7 +104,9 @@ class MyTasksController extends Controller
      */
     private function getExecutorTasks(int $userId, string $status): array
     {
-        $executorTasks = Tasks::find()->with('category')->where(['executor_id' => $userId]);
+        $executorTasks = Tasks::find()->with(['category', 'city'])->where(['executor_id' => $userId])->orderBy(
+            ['created_at' => SORT_DESC]
+        );
 
         return match ($status) {
             self::FILTER_ACTIVE => $executorTasks->andWhere(['status' => Tasks::STATUS_ACTIVE])

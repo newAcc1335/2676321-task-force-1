@@ -36,8 +36,9 @@ $this->title = 'Задания';
             </p>
             <p class="task-text"><?= Html::encode($task->description); ?></p>
             <div class="footer-task">
+
                 <p class="info-text town-text">
-                    <?= Html::encode($task->location_name ?? 'Адрес не указан'); ?>
+                    <?= Html::encode($task->city?->name ?? 'Адрес не указан');?>
                 </p>
                 <p class="info-text category-text"><?= Html::encode($task->category->name); ?></p>
                 <a href="<?= Url::to(['tasks/view', 'id' => $task->id]) ?>" class="button button--black">
