@@ -136,6 +136,10 @@ class EditProfileForm extends Model
     {
         $fileDir = Yii::getAlias('@webroot') . '/files/';
 
+        if (!is_dir($fileDir)) {
+            mkdir($fileDir, 0755, true);
+        }
+
         $fileName = uniqid() . '_' . $this->avatar->baseName . '.' . $this->avatar->extension;
 
         if (!$this->avatar->saveAs($fileDir . $fileName)) {

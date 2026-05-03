@@ -263,7 +263,7 @@ class Users extends ActiveRecord implements IdentityInterface
         return self::findOne($id);
     }
 
-    public static function findIdentityByAccessToken($token, $type = null): void
+    public static function findIdentityByAccessToken($token, $type = null)
     {
     }
 
@@ -272,11 +272,11 @@ class Users extends ActiveRecord implements IdentityInterface
         return $this->getPrimaryKey();
     }
 
-    public function getAuthKey(): void
+    public function getAuthKey()
     {
     }
 
-    public function validateAuthKey($authKey): void
+    public function validateAuthKey($authKey)
     {
     }
 }
