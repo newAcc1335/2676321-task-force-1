@@ -86,16 +86,16 @@ $this->title = 'Задания';
 
                 <h4 class="head-card">Дополнительно</h4>
                 <div class="form-group">
-                    <label class="control-label" for="without-performer">
-                        <input type="hidden" name="TasksForm[isWithoutExecutor]" value="0">
+                    <label class="control-label" for="without-responses">
+                        <input type="hidden" name="TasksForm[isWithoutResponses]" value="0">
                         <input
-                                id="without-performer"
+                                id="without-responses"
                                 type="checkbox"
-                                name="TasksForm[isWithoutExecutor]"
+                                name="TasksForm[isWithoutResponses]"
                                 value="1"
-                                <?= $form->isWithoutExecutor ? 'checked' : ''; ?>
+                                <?= $form->isWithoutResponses ? 'checked' : ''; ?>
                         >
-                        <?= $form->getAttributeLabel('isWithoutExecutor'); ?>
+                        <?= $form->getAttributeLabel('isWithoutResponses'); ?>
                     </label>
                 </div>
                 <h4 class="head-card"><?= $form->getAttributeLabel('period'); ?></h4>

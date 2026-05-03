@@ -84,8 +84,8 @@ class TasksController extends Controller
                 $tasks->andWhere(['category_id' => $form->categories]);
             }
 
-            if ($form->isWithoutExecutor) {
-                $tasks->andWhere(['executor_id' => null]);
+            if ($form->isWithoutResponses) {
+                $tasks->andWhere(['not in', 'id', Responses::find()->select('task_id')->distinct()]);
             }
 
             if ($form->period !== '') {

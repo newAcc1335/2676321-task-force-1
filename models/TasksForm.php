@@ -16,7 +16,7 @@ class TasksForm extends Model
         '24' => '24 часа',
     ];
     public array $categories = [];
-    public bool $isWithoutExecutor = false;
+    public bool $isWithoutResponses = false;
     public string $period = '';
 
     public function rules(): array
@@ -29,7 +29,7 @@ class TasksForm extends Model
                  'targetAttribute' => 'id'
              ]
             ],
-            ['isWithoutExecutor', 'boolean'],
+            ['isWithoutResponses', 'boolean'],
             ['period', 'in', 'range' => array_keys(self::PERIOD_OPTIONS)],
         ];
     }
@@ -38,7 +38,7 @@ class TasksForm extends Model
     {
         return [
                 'categories' => 'Категории',
-                'isWithoutExecutor' => 'Без исполнителя',
+                'isWithoutResponses' => 'Без откликов',
                 'period' => 'Период',
         ];
     }
